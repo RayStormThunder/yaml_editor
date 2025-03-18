@@ -5,7 +5,10 @@ on:
     branches:
       - main
   release:
-    types: [created]  # Triggers on GitHub Release creation
+    types: [created]
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -20,21 +23,37 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install PyInstaller
-        run: pip install pyinstaller
+      - name: Install Dependencies
+        run: |
+          pip install pyinstaller pyyaml  # Ensure PyYAML is installed
 
       - name: Build Executable
         run: |
-          pyinstaller --onefile --add-data "Setup;Setup" --add-data "YAML;YAML" yaml_editor.py
+          pyinstaller --onefile --hidden-import=yaml --add-data "Setup;Setup" --add-data "YAML;YAML" yaml_editor.py
+
+      - name: Package EXE into ZIP
+        run: |
+          mkdir release
+          mv dist/yaml_editor.exe release/yaml_editor.exe
+          cd release
+          powershell -Command "Compress-Archive -Path yaml_editor.exe -DestinationPath yaml_editor.zip"
 
       - name: Upload EXE as Artifact (For GitHub Actions)
         uses: actions/upload-artifact@v4
         with:
-          name: yaml_editor_exe
+          name: yaml_editor
           path: dist/yaml_editor.exe
 
-      - name: Upload EXE to GitHub Release (If Release Created)
+      - name: Upload ZIP as Artifact (For GitHub Actions)
+        uses: actions/upload-artifact@v4
+        with:
+          name: yaml_editor_zip
+          path: release/yaml_editor.zip
+
+      - name: Upload EXE & ZIP to GitHub Release (If Release Created)
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/yaml_editor.exe
+          files: |
+            dist/yaml_editor.exe
+            release/yaml_editor.zip
