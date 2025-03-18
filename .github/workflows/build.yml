@@ -3,9 +3,9 @@ name: Build and Release EXE
 on:
   push:
     branches:
-      - main  # Runs on every push to main
+      - main
   release:
-    types: [created]  # Runs when a GitHub release is created
+    types: [created]  # Triggers on GitHub Release creation
 
 jobs:
   build:
@@ -18,7 +18,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"  # Change if needed
+          python-version: "3.10"
 
       - name: Install PyInstaller
         run: pip install pyinstaller
@@ -27,21 +27,14 @@ jobs:
         run: |
           pyinstaller --onefile --add-data "Setup;Setup" --add-data "YAML;YAML" yaml_editor.py
 
-      - name: Package into ZIP
-        run: |
-          mkdir release
-          mv dist/yaml_editor.exe release/yaml_editor.exe
-          cd release
-          powershell -Command "Compress-Archive -Path yaml_editor.exe -DestinationPath yaml_editor.zip"
-
-      - name: Upload ZIP as Artifact
+      - name: Upload EXE as Artifact (For GitHub Actions)
         uses: actions/upload-artifact@v4
         with:
-          name: yaml_editor_build
-          path: release/yaml_editor.zip
+          name: yaml_editor_exe
+          path: dist/yaml_editor.exe
 
-      - name: Upload to GitHub Release (If Release Created)
+      - name: Upload EXE to GitHub Release (If Release Created)
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v1
         with:
-          files: release/yaml_editor.zip
+          files: dist/yaml_editor.exe
