@@ -1,0 +1,48 @@
+Completion:
+  - progression_balancing
+  - accessibility
+  - got_sword_requirement
+  - got_dungeon_requirement
+  - required_dungeon_count
+  - empty_unrequired_dungeons
+  - triforce_required
+  - triforce_shuffle
+  - imp2_skip
+  - skip_horde
+  - skip_g3
+  - skip_demise
+  - demise_count
+Open:
+  - open_thunderhead
+  - open_et
+  - open_lmf
+  - open_lake_floria
+  - got_start
+  - randomize_puzzles
+Progression:
+  - progression_goddess_chests
+  - progression_minigames
+  - progression_crystals
+  - progression_scrapper
+  - progression_batreaux
+  - treasuresanity_in_silent_realms
+  - shuffle_trial_objects
+  - trial_treasure_amount
+  - rupeesanity
+  - tadtonesanity
+  - shopsanity
+Start Items:
+  - starting_sword
+  - starting_tablet_count
+  - starting_crystal_packs
+  - starting_bottles
+  - starting_heart_containers
+  - starting_heart_pieces
+  - starting_tadtones
+  - random_starting_item
+  - map_mode
+  - start_with_hylian_shield
+  - full_starting_wallet
+  - max_starting_bugs
+  - max_starting_treasures
+
