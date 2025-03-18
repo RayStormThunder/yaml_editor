@@ -35,7 +35,7 @@ jobs:
           powershell -Command "Compress-Archive -Path yaml_editor.exe -DestinationPath yaml_editor.zip"
 
       - name: Upload ZIP as Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: yaml_editor_build
           path: release/yaml_editor.zip
