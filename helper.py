@@ -5,6 +5,12 @@ import re
 import os
 from functools import lru_cache
 
+def load_alt_names(file_path):
+	"""Loads the alternative names from the YAML file."""
+	if os.path.exists(file_path):
+		with open(file_path, "r", encoding="utf-8") as f:
+			return yaml.safe_load(f)
+	return {}
 
 @lru_cache(maxsize=None)
 def load_datapackage(working_directory):
@@ -16,34 +22,40 @@ def load_datapackage(working_directory):
 
 @lru_cache(maxsize=None)
 def item_list(base_game, working_directory):
-    """Returns all headers from 'item_name_to_id' in 'Stardew Valley'."""
-    if base_game == "The Wind Waker":
-        base_game = "Wind Waker"
+    """Returns all headers from 'item_name_to_id."""
+    ALT_NAMES_FILE = os.path.join(working_directory, "Setup", "alt_names.yaml")
+    alt_names = load_alt_names(ALT_NAMES_FILE)
+    base_game = alt_names.get(base_game, base_game)
+
     data = load_datapackage(working_directory)
-    stardew_data = data["games"].get(base_game, {})
-    return list(stardew_data.get("item_name_to_id", {}).keys())  # Return as list
+    game_data = data["games"].get(base_game, {})
+    return list(game_data.get("item_name_to_id", {}).keys())  # Return as list
 
 @lru_cache(maxsize=None)
 def location_list(base_game, working_directory):
-    """Returns all headers from 'location_name_to_id' in 'Stardew Valley'."""
-    if base_game == "The Wind Waker":
-        base_game = "Wind Waker"
+    """Returns all headers from 'location_name_to_id'."""
+    ALT_NAMES_FILE = os.path.join(working_directory, "Setup", "alt_names.yaml")
+    alt_names = load_alt_names(ALT_NAMES_FILE)
+    base_game = alt_names.get(base_game, base_game)
+
     data = load_datapackage(working_directory)
-    stardew_data = data["games"].get(base_game, {})
-    return list(stardew_data.get("location_name_to_id", {}).keys())
+    game_data = data["games"].get(base_game, {})
+    return list(game_data.get("location_name_to_id", {}).keys())
 
 @lru_cache(maxsize=None)
 def get_headers(category_type, base_game, working_directory):
-    """Returns all headers from either 'item_name_groups' or 'location_name_groups' in 'Stardew Valley'."""
-    if base_game == "The Wind Waker":
-        base_game = "Wind Waker"
+    """Returns all headers from either 'item_name_groups' or 'location_name_groups'."""
+    ALT_NAMES_FILE = os.path.join(working_directory, "Setup", "alt_names.yaml")
+    alt_names = load_alt_names(ALT_NAMES_FILE)
+    base_game = alt_names.get(base_game, base_game)
+
     data = load_datapackage(working_directory)
-    stardew_data = data["games"].get(base_game, {})
+    game_data = data["games"].get(base_game, {})
 
     if category_type == "item":
-        return list(stardew_data.get("item_name_groups", {}).keys())
+        return list(game_data.get("item_name_groups", {}).keys())
     elif category_type == "location":
-        return list(stardew_data.get("location_name_groups", {}).keys())
+        return list(game_data.get("location_name_groups", {}).keys())
     return []
 
 def snake_to_title(text):

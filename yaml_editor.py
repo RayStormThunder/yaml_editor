@@ -39,6 +39,120 @@ drag_timer = QtCore.QTimer()  # Timer for detecting drag stop
 drag_timer.setSingleShot(True)  # Runs only once per stop
 bundled_folders = ["Setup", "YAML"]
 
+list_items = []
+list_locations = []
+list_items_exclusive = []
+list_locations_exclusive = []
+
+dictionary_items = []
+dictionary_locations = []
+dictionary_items_exclusive = []
+dictionary_locations_exclusive = []
+
+all_lists = []
+all_dictionaries = []
+
+all_exclusive = []
+all_non_exclusive = []
+
+custom_lists = {}
+custom_lists_exclusive = {}
+
+def create_yaml_rules():
+    default_yaml_file = os.path.join(YAML_RULES_FOLDER, "default.yaml")
+    game_yaml_file = os.path.join(YAML_RULES_FOLDER, f"{base_game}.yaml")
+    
+    if not os.path.exists(default_yaml_file):
+        print(f"Error: {default_yaml_file} not found.")
+        return
+    
+    list_items.clear()
+    list_locations.clear()
+    list_items_exclusive.clear()
+    list_locations_exclusive.clear()
+    dictionary_items.clear()
+    dictionary_locations.clear()
+    dictionary_items_exclusive.clear()
+    dictionary_locations_exclusive.clear()
+    custom_lists.clear()
+    custom_lists_exclusive.clear()
+    all_lists.clear()
+    all_dictionaries.clear()
+    all_exclusive.clear()
+    all_non_exclusive.clear()
+
+    with open(default_yaml_file, "r", encoding="utf-8") as file:
+        data = yaml.safe_load(file)
+    
+    # Extract and populate lists based on the YAML structure
+    list_items_exclusive.extend(data.get("List Items", {}).get("Exclusive", []))
+    list_items.extend(data.get("List Items", {}).get("Non-Exclusive", []))
+    
+    list_locations_exclusive.extend(data.get("List Locations", {}).get("Exclusive", []))
+    list_locations.extend(data.get("List Locations", {}).get("Non-Exclusive", []))
+    
+    dictionary_items_exclusive.extend(data.get("Dictionary Items", {}).get("Exclusive", []))
+    dictionary_items.extend(data.get("Dictionary Items", {}).get("Non-Exclusive", []))
+    
+    dictionary_locations_exclusive.extend(data.get("Dictionary Locations", {}).get("Exclusive", []))
+    dictionary_locations.extend(data.get("Dictionary Locations", {}).get("Non-Exclusive", []))
+    
+    # Process game-specific YAML file
+    if os.path.exists(game_yaml_file):
+        with open(game_yaml_file, "r", encoding="utf-8") as file:
+            game_data = yaml.safe_load(file)
+        
+        # Remove Default Entries
+        remove_defaults = game_data.get("Remove Default", [])
+        list_items[:] = [item for item in list_items if item not in remove_defaults]
+        list_items_exclusive[:] = [item for item in list_items_exclusive if item not in remove_defaults]
+        list_locations[:] = [location for location in list_locations if location not in remove_defaults]
+        list_locations_exclusive[:] = [location for location in list_locations_exclusive if location not in remove_defaults]
+        dictionary_items[:] = [item for item in dictionary_items if item not in remove_defaults]
+        dictionary_items_exclusive[:] = [item for item in dictionary_items_exclusive if item not in remove_defaults]
+        dictionary_locations[:] = [location for location in dictionary_locations if location not in remove_defaults]
+        dictionary_locations_exclusive[:] = [location for location in dictionary_locations_exclusive if location not in remove_defaults]
+        
+        # Add new entries
+        list_items_exclusive.extend(game_data.get("List Items", {}).get("Exclusive", []))
+        list_items.extend(game_data.get("List Items", {}).get("Non-Exclusive", []))
+        list_locations_exclusive.extend(game_data.get("List Locations", {}).get("Exclusive", []))
+        list_locations.extend(game_data.get("List Locations", {}).get("Non-Exclusive", []))
+        dictionary_items_exclusive.extend(game_data.get("Dictionary Items", {}).get("Exclusive", []))
+        dictionary_items.extend(game_data.get("Dictionary Items", {}).get("Non-Exclusive", []))
+        dictionary_locations_exclusive.extend(game_data.get("Dictionary Locations", {}).get("Exclusive", []))
+        dictionary_locations.extend(game_data.get("Dictionary Locations", {}).get("Non-Exclusive", []))
+        
+        # Process Custom Lists
+        custom_lists_exclusive.update(game_data.get("Custom Lists", {}).get("Exclusive", {}))
+        custom_lists.update(game_data.get("Custom Lists", {}).get("Non-Exclusive", {}))
+    
+    # Create combined lists
+    all_lists.extend(
+        list_items + list_items_exclusive + list_locations + list_locations_exclusive +
+        list(custom_lists_exclusive.keys()) +
+        list(custom_lists.keys())
+
+    )
+    all_dictionaries.extend(dictionary_items + dictionary_items_exclusive + dictionary_locations + dictionary_locations_exclusive)
+    
+    # Add exclusive and non-exclusive custom list names to respective lists
+    all_exclusive.extend(
+        list_items_exclusive + dictionary_items_exclusive + list_locations_exclusive + dictionary_locations_exclusive +
+        list(custom_lists_exclusive.keys())
+    )
+    all_non_exclusive.extend(
+        list_items + dictionary_items + list_locations + dictionary_locations +
+        list(custom_lists.keys())
+    )
+    print("Exclusive List" + str(list(custom_lists_exclusive.keys())))
+    print("Exclusive Combined List" + str(all_exclusive))
+    print("Non-Exclusive List" + str(list(custom_lists.keys())))
+    print("Non-Exclusive Combined List" + str(all_non_exclusive))
+    print("Custom List" + str(custom_lists))
+    print("Custom Exclusive List" + str(custom_lists_exclusive))
+
+    print("YAML rules successfully loaded.")
 
 def extract_folders():
     """Extracts the bundled folders to the EXE directory if they don’t already exist."""
@@ -79,6 +193,10 @@ def load_yaml_action(window):
                 # Extract base_game from the YAML data
                 global base_game
                 base_game = data.get("game", "Unknown")  # Default to "Unknown" if not found
+
+                # Run Function to get the rules of Lists and Dictionaries
+                create_yaml_rules()
+
                 global detailed_yaml_file_name
                 detailed_yaml_file_name = f"{BASE_YAMLS_FOLDER}/{base_game}.yaml"  # Main YAML
                 print(f"Base game set to: {base_game}")
@@ -152,7 +270,7 @@ def extract_ui_data(root, reference_data):
         items = tab["items"]
 
         if tab_name in reference_data[base_game]:
-            if tab_name in ("start_inventory", "start_inventory_from_pool", "starting_items"):
+            if tab_name in all_dictionaries:
                 inventory_dict = {}
                 for item in items:
                     inventory_dict[item] = inventory_dict.get(item, 0) + 1
@@ -167,11 +285,11 @@ def return_filter_array(selected_group, current_items):
        Always filters out 'Mods' unless 'Mods' is explicitly selected."""
     
     data = load_datapackage(working_directory)
-    stardew_data = data["games"].get(base_game, {})
+    game_data = data["games"].get(base_game, {})
 
     # Get both item groups and location groups
-    item_groups = stardew_data.get("item_name_groups", {})
-    location_groups = stardew_data.get("location_name_groups", {})
+    item_groups = game_data.get("item_name_groups", {})
+    location_groups = game_data.get("location_name_groups", {})
 
     # If "All" is selected, apply default filtering rules
     if selected_group == "All":
@@ -265,6 +383,19 @@ def create_editor(root, data):
     # Force an initial resize to match the window
     root.resize(root.width(), root.height())
 
+def get_yaml_version(game_name):
+    """Fetches the YAML version from game_version.yaml based on the game name."""
+    yaml_path = os.path.join(SETUP_FOLDER, "game_version.yaml")
+
+    try:
+        with open(yaml_path, "r", encoding="utf-8") as file:
+            versions = yaml.safe_load(file).get("Versions", {})
+            return versions.get(game_name, "Unknown Version")
+    except FileNotFoundError:
+        return "Version File Not Found"
+    except yaml.YAMLError:
+        return "Invalid YAML Format"
+
 def create_settings_header(data, settings_group):
     settings_layout = QtWidgets.QGridLayout()
 
@@ -283,12 +414,19 @@ def create_settings_header(data, settings_group):
     game_entry.setObjectName("game_entry")
     game_entry.setText(snake_to_title(data.get("game", "")))
 
+    # Fetch the version number from YAML
+    game_name = data.get("game", "")
+    yaml_version = get_yaml_version(game_name)
+
+    yaml_version_label = QtWidgets.QLabel(f"Patcher Version: {yaml_version}")
+
     settings_layout.addWidget(name_label, 0, 0)
     settings_layout.addWidget(name_entry, 0, 1)
     settings_layout.addWidget(desc_label, 0, 2)
     settings_layout.addWidget(desc_entry, 0, 3)
     settings_layout.addWidget(game_label, 0, 6)
     settings_layout.addWidget(game_entry, 0, 7)
+    settings_layout.addWidget(yaml_version_label, 0, 8, 1, 2)  # Span 2 columns for better spacing
 
     settings_group.setLayout(settings_layout)
 
@@ -333,7 +471,7 @@ def create_tab(tab_name, categories, data, notebook, base_game, detailed_yaml_fi
             if not content:
                 continue
 
-            if category in ["start_inventory", "start_inventory_from_pool", "starting_items"]:  
+            if category in all_dictionaries:  
                 continue  # Skip processing start_inventory
 
             if category not in categories:
@@ -393,7 +531,7 @@ def create_other_tab(data, root, notebook):
     for category, content in category_data.items():
         if isinstance(content, dict): 
             if content and all(isinstance(v, int) for v in content.values()):
-                if not any(c in category for c in ["start_inventory","start_inventory_from_pool", "starting_items"]):  
+                if not any(c in category for c in all_dictionaries):  
                     pass  
                 else:
                     content = [item for item, count in content.items() for _ in range(count)]
@@ -411,36 +549,40 @@ def create_other_tab(data, root, notebook):
             excluded_items.append({"tab_name": category, "items": []})
 
             #GENERAL
-            if category in ["local_items", "non_local_items", "start_hints", "item_links", "start_inventory", "starting_items", "start_inventory_from_pool"]:
+
+            #Standard Lists
+            if category in list_items_exclusive or category in dictionary_items_exclusive or category in list_items or category in dictionary_items:
                 excluded_items[-1]["items"] = item_list_array  # Updates the last appended excluded_items entry
                 dropdown_options = get_headers("item", base_game, working_directory)
 
-            if category in ["start_location_hints", "priority_locations", "exclude_locations"]:
+            if category in list_locations_exclusive or category in dictionary_locations_exclusive or category in list_locations or category in dictionary_locations:
                 excluded_items[-1]["items"] = location_list_array  # Updates the last appended excluded_items entry
                 dropdown_options = get_headers("location", base_game, working_directory)
 
-            if not category in ["start_inventory", "start_inventory_from_pool", "starting_items"]:
-                excluded_items[-1]["items"] = [item for item in excluded_items[-1]["items"] if item not in content]
+            #Exclusive
+            if category in list_items_exclusive or category in dictionary_items_exclusive:
+                excluded_items[-1]["items"] = [included_filter for included_filter in excluded_items[-1]["items"] if included_filter not in content]
 
-            #STARDEW VALLEY
-            if category == "walnutsanity":                
-                excluded_items[-1]["items"] = ["Bushes", "Dig Spot", "Puzzles", "Repeatables"]
+            if category in list_locations_exclusive or category in dictionary_locations_exclusive:
+                excluded_items[-1]["items"] = [included_filter for included_filter in excluded_items[-1]["items"] if included_filter not in content]
 
-            if category == "enabled_filler_buffs":                
-                excluded_items[-1]["items"] = ["Bite Rate", "Damage", "Defense", "Energy", "Fish Trap", "Fishing Bar Size", "Health", "Immunity", "Luck"]
 
-            if category == "mods":                
-                excluded_items[-1]["items"] = ["Alec Revisited", "Alecto the Witch", "Archaeology", "Ayeisha - The Postal Worker (Custom NPC)", "Bigger Backpack", "Binning Skill", "Distant Lands - Witch Swamp Overhaul",
-                                                "Hat Mouse Lacey", "Juna - Roomate NPC", "Luck Skill", "Mister Ginger (cat npc)", "Professor Jasper Thomas", "Skull Cavern Elevator", "Socializing Skill", "Stardew Valley Expanded",
-                                                "Tractor Mod"]
+
+            #Custom Lists
+            if category in custom_lists_exclusive or category in list_locations:
+                excluded_items[-1]["items"] = custom_lists_exclusive[category]
+
+            #Exclusive
+            if category in custom_lists_exclusive:
+                excluded_items[-1]["items"] = [included_filter for included_filter in excluded_items[-1]["items"] if included_filter not in content]
+
+
 
             # **SKIP TAB CREATION IF BOTH INCLUDED & EXCLUDED ARE EMPTY**
             if not included_items[-1]["items"] and not excluded_items[-1]["items"]:
                 included_items.pop()  # Remove the last added entry
                 excluded_items.pop()  # Remove the last added entry
                 continue  # Skip creating this tab
-
-
 
 
             tab_data[category] = {"included": content, "excluded": []}
@@ -595,13 +737,13 @@ def create_other_tab(data, root, notebook):
 
                 print(f"(move_selected_items) Moving items from {source_list} to {dest_list}: {selected['items']}")
 
-                is_start_inventory = current_tab_name_formatted in ("start_inventory", "start_inventory_from_pool", "starting_items")
+                non_exclusive = current_tab_name_formatted in all_non_exclusive
 
                 for item_name in selected["items"]:
                     if source_list == "excluded":  # Move from Excluded to Included
                         for tab in excluded_items:
                             if tab["tab_name"] == current_tab_name_formatted and item_name in tab["items"]:
-                                if not is_start_inventory:
+                                if not non_exclusive:
                                     tab["items"].remove(item_name)
                                 break
                         for tab in included_items:
@@ -616,7 +758,7 @@ def create_other_tab(data, root, notebook):
                                 break
                         for tab in excluded_items:
                             if tab["tab_name"] == current_tab_name_formatted:
-                                if not is_start_inventory:
+                                if not non_exclusive:
                                     tab["items"].append(item_name)
                                 break
 
@@ -773,6 +915,9 @@ def moveEvent(event):
 def main(new_file_path=None, converted_data=None):
     # Get the real script directory, whether running as .py or .exe
     extract_folders()
+
+    # Run Function to get the rules of Lists and Dictionaries
+    create_yaml_rules()
 
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
