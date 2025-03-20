@@ -24,7 +24,9 @@ jobs:
         id: get_version
         shell: bash  # Force use of bash instead of PowerShell
         run: |
-          echo "VERSION=$(git tag --sort=v:refname)" >> $GITHUB_ENV
+          VERSION=$(git tag --sort=-v:refname | head -n1 2>/dev/null || echo "0.0.0")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Detected Version: $VERSION"
 
       - name: Get Commit Hash
         id: get_commit
