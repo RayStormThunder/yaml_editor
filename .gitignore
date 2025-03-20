@@ -13,6 +13,7 @@ __pycache__/
 # Ignore PyInstaller build files
 dist/
 build/
+release/
 *.spec
 
 # Ignore virtual environments (if using venv)

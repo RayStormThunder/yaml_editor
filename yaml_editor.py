@@ -20,6 +20,12 @@ from helper import (
 )
 from themes import dark_theme, notebook_style
 
+# Import version information
+try:
+    from version import VERSION, COMMIT_ID
+except ImportError:
+    VERSION, COMMIT_ID = "v0.0.0", "unknown"
+
 working_directory = os.path.dirname(sys.executable)  # EXE location
 YAML_FOLDER = os.path.join(working_directory, "YAML")
 SETUP_FOLDER = os.path.join(working_directory, "Setup")
@@ -924,7 +930,8 @@ def main(new_file_path=None, converted_data=None):
     app = QtWidgets.QApplication([])
 
     window = QtWidgets.QWidget()
-    window.setWindowTitle("YAML Editor")
+    # **Updated Title with Version & Commit ID**
+    window.setWindowTitle(f"YAML Editor - {VERSION} - {COMMIT_ID}")
 
     adjust_window_size(window)  # Initial size adjustment
 

@@ -18,6 +18,21 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      - name: Get Latest Tag (Version)
+        id: get_version
+        run: |
+          echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+
+      - name: Get Commit Hash
+        id: get_commit
+        run: |
+          echo "COMMIT_ID=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+
+      - name: Create `version.py`
+        run: |
+          echo "VERSION = '${{ env.VERSION }}'" > version.py
+          echo "COMMIT_ID = '${{ env.COMMIT_ID }}'" >> version.py
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
