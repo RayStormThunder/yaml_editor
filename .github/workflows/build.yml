@@ -22,11 +22,13 @@ jobs:
 
       - name: Get Latest Tag (Version)
         id: get_version
+        shell: bash  # Force use of bash instead of PowerShell
         run: |
           echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
 
       - name: Get Commit Hash
         id: get_commit
+        shell: bash  # Force use of bash instead of PowerShell
         run: |
           echo "COMMIT_ID=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
 
