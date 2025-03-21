@@ -137,3 +137,10 @@ class TooltipButton(QPushButton):
             # Show the new tooltip and set it as active
             self.tooltip.show_tooltip(QCursor.pos())
             TooltipButton.active_tooltip = self.tooltip
+
+    @staticmethod
+    def hide_active_tooltip():
+        if TooltipButton.active_tooltip is not None:
+            TooltipButton.active_tooltip.hide_tooltip()
+            TooltipButton.active_tooltip = None
+

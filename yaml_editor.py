@@ -353,6 +353,11 @@ def create_editor(root, data):
     if old_notebook:
         old_notebook.deleteLater()
 
+    # Clean up old Load/Save buttons (by name or text match)
+    for widget in root.findChildren(QtWidgets.QPushButton):
+        if widget.text() in ["LOAD YAML", "SAVE YAML"]:
+            widget.deleteLater()
+
     notebook = QtWidgets.QTabWidget()
     notebook.setObjectName("general_tab")
     notebook.setStyleSheet(notebook_style)
@@ -368,7 +373,7 @@ def create_editor(root, data):
     # Button Layout
     button_layout = QHBoxLayout()
     load_button = QPushButton("LOAD YAML")
-    save_button = QPushButton("SAVE YAML")  # Placeholder for now
+    save_button = QPushButton("SAVE YAML")
 
     load_button.clicked.connect(lambda: load_yaml_action(root))  # Hook up LOAD YAML button
     save_button.clicked.connect(lambda: save_yaml_action(root, data))
@@ -522,6 +527,8 @@ def create_tab(tab_name, categories, data, notebook, base_game, detailed_yaml_fi
                 col = 0
     
     tab.setLayout(layout)
+    # Hide tooltip when tab is changed
+    notebook.currentChanged.connect(TooltipButton.hide_active_tooltip)
     notebook.addTab(tab, tab_name)
 
 
