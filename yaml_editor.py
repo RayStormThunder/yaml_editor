@@ -10,7 +10,7 @@ from tkinter import ttk
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt, QStringListModel, QSortFilterProxyModel
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QApplication, QPushButton, QHBoxLayout, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QApplication, QPushButton, QHBoxLayout, QFileDialog, QMessageBox, QWidget, QVBoxLayout, QGridLayout, QScrollArea, QSizePolicy, QLabel, QComboBox, QHBoxLayout
 
 from tooltips import TooltipButton
 from yaml_converter import convert_yaml
@@ -24,7 +24,7 @@ from themes import dark_theme, notebook_style
 try:
     from version import VERSION, COMMIT_ID
 except ImportError:
-    VERSION, COMMIT_ID = "v0.0.0", "unknown"
+    VERSION, COMMIT_ID = "v0.0.0", "badcafe"
 
 working_directory = os.path.dirname(sys.executable)  # EXE location
 YAML_FOLDER = os.path.join(working_directory, "YAML")
@@ -161,16 +161,12 @@ def create_yaml_rules():
     print("YAML rules successfully loaded.")
 
 def extract_folders():
-    """Extracts the bundled folders to the EXE directory if they don’t already exist."""
     for folder in bundled_folders:
         source = os.path.join(sys._MEIPASS, folder) if getattr(sys, 'frozen', False) else folder
         destination = os.path.join(working_directory, folder)
 
-        if not os.path.exists(destination):  # Extract only if missing
-            print(f"Extracting {folder} to {destination}...")
-            shutil.copytree(source, destination, dirs_exist_ok=True)
-        else:
-            print(f"{folder} already exists, skipping extraction.")
+        print(f"Extracting {folder} to {destination}...")
+        shutil.copytree(source, destination, dirs_exist_ok=True)
 
 # Load YAML Function
 def load_yaml_action(window):
@@ -250,7 +246,7 @@ def save_yaml_action(root, reference_data):
     QMessageBox.information(root, "Save Successful", f"YAML file saved successfully:\n{file_path}")
 
     # Print confirmation & file contents
-    print(f"✅ YAML saved successfully: {file_path}")
+    print(f"YAML saved successfully: {file_path}")
     with open(file_path, "r", encoding="utf-8") as file:
         print(file.read())  # Print saved YAML content to console
 
@@ -406,6 +402,34 @@ def get_yaml_version(game_name):
         return "Version File Not Found"
     except yaml.YAMLError:
         return "Invalid YAML Format"
+    
+def change_yaml_version(game_name, new_version):
+    """Updates the YAML version in game_version.yaml for the given game name."""
+    yaml_path = os.path.join(SETUP_FOLDER, "game_version.yaml")
+
+    try:
+        # Load existing data
+        if os.path.exists(yaml_path):
+            with open(yaml_path, "r", encoding="utf-8") as file:
+                data = yaml.safe_load(file) or {}
+        else:
+            data = {}
+
+        # Ensure "Versions" key exists
+        if "Versions" not in data or not isinstance(data["Versions"], dict):
+            data["Versions"] = {}
+
+        # Update the version
+        data["Versions"][game_name] = new_version
+
+        # Save back to file
+        with open(yaml_path, "w", encoding="utf-8") as file:
+            yaml.safe_dump(data, file, allow_unicode=True)
+
+        return True
+    except yaml.YAMLError:
+        return False
+
 
 def create_settings_header(data, settings_group):
     settings_layout = QtWidgets.QGridLayout()
@@ -470,40 +494,43 @@ def create_general_tab(data, notebook):
         create_tab("General", extra_categories, data, notebook, base_game, detailed_yaml_file_name)
 
 def create_tab(tab_name, categories, data, notebook, base_game, detailed_yaml_file_name):
-    tab = QtWidgets.QWidget()
-    layout = QtWidgets.QGridLayout()
-    layout.setSpacing(0)  # Reduce spacing between widgets
-    
-    tooltips = {category: extract_comments_before_label(detailed_yaml_file_name, category) for category in categories}
-    
+    tab = QWidget()
+    main_layout = QVBoxLayout(tab)
+
+    tooltips = {
+        category: extract_comments_before_label(detailed_yaml_file_name, category)
+        for category in categories
+    }
+
+    # Create the widget that holds the scrollable content
+    scroll_content = QWidget()
+    scroll_content_layout = QGridLayout()
+    scroll_content_layout.setSpacing(0)
+    scroll_content.setLayout(scroll_content_layout)
+
     row, col = 0, 0
     for category, content in data.get(base_game, {}).items():
         if isinstance(content, dict) and all(isinstance(v, (int, float)) for v in content.values()):
-            if not content:
+            if not content or category in all_dictionaries or category not in categories:
                 continue
 
-            if category in all_dictionaries:  
-                continue  # Skip processing start_inventory
+            frame = QWidget()
+            frame_layout = QVBoxLayout()
+            frame.setMaximumHeight(100)  # or whatever height you prefer
+            frame_layout.setSpacing(0)
 
-            if category not in categories:
-                continue  # Skip if category is not listed under the current tab header
+            label_row = QHBoxLayout()
+            label_row.setSpacing(0)
 
-            frame = QtWidgets.QWidget()
-            frame_layout = QtWidgets.QVBoxLayout()
-            frame_layout.setSpacing(0)  # Reduce spacing in the frame
-
-            label_row = QtWidgets.QHBoxLayout()
-            label_row.setSpacing(0)  # Reduce spacing in the frame
-
-            label = QtWidgets.QLabel(snake_to_title(category) + ":")
+            label = QLabel(snake_to_title(category) + ":")
             tooltip_text = tooltips.get(category, "No comments found.")
             tooltip_button = TooltipButton(tooltip_text, frame)
 
             label_row.addWidget(label)
             label_row.addStretch()
-            label_row.addWidget(tooltip_button, alignment=Qt.AlignRight)
+            label_row.addWidget(tooltip_button)
 
-            dropdown = QtWidgets.QComboBox()
+            dropdown = QComboBox()
             dropdown.setObjectName(f"dropdown_{category}")
             dropdown.setEditable(True)
             dropdown.setMaxVisibleItems(40)
@@ -511,23 +538,42 @@ def create_tab(tab_name, categories, data, notebook, base_game, detailed_yaml_fi
             selected_value = snake_to_title(str(max(content, key=content.get)))
             options = [snake_to_title(str(k)) for k in content.keys()]
             dropdown.addItems(options)
+            if selected_value in options:
+                dropdown.setCurrentText(selected_value)
 
             frame_layout.addLayout(label_row)
             frame_layout.addWidget(dropdown)
             frame.setLayout(frame_layout)
 
-            layout.addWidget(frame, row, col, 1, 2)
-
-            if selected_value in options:
-                dropdown.setCurrentText(selected_value)
-
+            scroll_content_layout.addWidget(frame, row, col, 1, 2)
             col += 2
             if col >= 10:
                 row += 1
                 col = 0
-    
-    tab.setLayout(layout)
-    # Hide tooltip when tab is changed
+
+            # Ensure there are at least 8 rows in the layout
+            min_rows = 8
+            current_row_count = row + 1 if col > 0 else row  # row is incremented after col >= 10
+
+            for r in range(current_row_count, min_rows):
+                placeholder = QWidget()
+                scroll_content_layout.addWidget(placeholder, r, 0, 1, 10)  # span 10 columns to maintain layout
+
+
+    # Scroll area setup
+    scroll_area = QScrollArea()
+    scroll_area.setWidgetResizable(True)
+    scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+    scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+    scroll_area.setWidget(scroll_content)
+
+    # ✨ Critical fix: allow content to expand horizontally
+    scroll_content.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+    scroll_content.setMinimumWidth(scroll_area.viewport().width())
+
+    main_layout.addWidget(scroll_area)
+    tab.setLayout(main_layout)
+
     notebook.currentChanged.connect(TooltipButton.hide_active_tooltip)
     notebook.addTab(tab, tab_name)
 
@@ -921,13 +967,19 @@ def update_screen_resolution(window):
         print("Current Resolution Workspace Changes To: " + res_new)
         adjust_window_size(window)
 
-def moveEvent(event):
+def move_event(event):
     """Called when the window moves. Starts a timer to detect when dragging stops."""
     drag_timer.start(500)  # Restart timer with 500ms delay
 
 def main(new_file_path=None, converted_data=None):
+    version_last = get_yaml_version("YAML Editor")
+    version_current = (f"{VERSION} {COMMIT_ID}")
+
     # Get the real script directory, whether running as .py or .exe
-    extract_folders()
+    if version_last != version_current:
+        extract_folders()
+
+    change_yaml_version("YAML Editor", version_current)
 
     # Run Function to get the rules of Lists and Dictionaries
     create_yaml_rules()
@@ -943,7 +995,7 @@ def main(new_file_path=None, converted_data=None):
     adjust_window_size(window)  # Initial size adjustment
 
     # Connect move event and drag timer
-    window.moveEvent = moveEvent
+    window.moveEvent = move_event
     drag_timer.timeout.connect(lambda: update_screen_resolution(window))
 
     # Detect when the window moves to a new screen
