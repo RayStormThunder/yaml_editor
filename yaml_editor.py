@@ -151,21 +151,21 @@ def create_yaml_rules():
         list_items + dictionary_items + list_locations + dictionary_locations +
         list(custom_lists.keys())
     )
-    print("Exclusive List" + str(list(custom_lists_exclusive.keys())))
-    print("Exclusive Combined List" + str(all_exclusive))
-    print("Non-Exclusive List" + str(list(custom_lists.keys())))
-    print("Non-Exclusive Combined List" + str(all_non_exclusive))
-    print("Custom List" + str(custom_lists))
-    print("Custom Exclusive List" + str(custom_lists_exclusive))
+    #print("Exclusive List" + str(list(custom_lists_exclusive.keys())))
+    #print("Exclusive Combined List" + str(all_exclusive))
+    #print("Non-Exclusive List" + str(list(custom_lists.keys())))
+    #print("Non-Exclusive Combined List" + str(all_non_exclusive))
+    #print("Custom List" + str(custom_lists))
+    #print("Custom Exclusive List" + str(custom_lists_exclusive))
 
-    print("YAML rules successfully loaded.")
+    #print("YAML rules successfully loaded.")
 
 def extract_folders():
     for folder in bundled_folders:
         source = os.path.join(sys._MEIPASS, folder) if getattr(sys, 'frozen', False) else folder
         destination = os.path.join(working_directory, folder)
 
-        print(f"Extracting {folder} to {destination}...")
+        #print(f"Extracting {folder} to {destination}...")
         shutil.copytree(source, destination, dirs_exist_ok=True)
 
 # Load YAML Function
@@ -187,7 +187,7 @@ def load_yaml_action(window):
         if selected_files:
             file_path = selected_files[0]
             file_path = os.path.join(YAML_FOLDER, file_path)
-            print(f"Selected YAML file: {file_path}")
+            #print(f"Selected YAML file: {file_path}")
 
             try:
                 data = read_yaml(file_path)
@@ -201,7 +201,7 @@ def load_yaml_action(window):
 
                 global detailed_yaml_file_name
                 detailed_yaml_file_name = f"{BASE_YAMLS_FOLDER}/{base_game}.yaml"  # Main YAML
-                print(f"Base game set to: {base_game}")
+                #print(f"Base game set to: {base_game}")
 
                 converted_data = convert_yaml(data, base_game, detailed_yaml_file_name, target_format="detailed")
 
@@ -219,6 +219,7 @@ def load_yaml_action(window):
                     QtWidgets.QWidget().setLayout(old_layout)
 
                 create_editor(window, converted_data)  
+                print(f"YAML loaded successfully: {file_path}")
 
             except Exception as e:
                 QtWidgets.QMessageBox.critical(window, "Error", f"Failed to load YAML file: {str(e)}")
@@ -247,8 +248,8 @@ def save_yaml_action(root, reference_data):
 
     # Print confirmation & file contents
     print(f"YAML saved successfully: {file_path}")
-    with open(file_path, "r", encoding="utf-8") as file:
-        print(file.read())  # Print saved YAML content to console
+    #with open(file_path, "r", encoding="utf-8") as file:
+    #    print(file.read())  # Print saved YAML content to console
 
 def extract_ui_data(root, reference_data):
     """Extracts all user input data from the UI and preserves order based on reference_data."""
@@ -484,13 +485,13 @@ def create_general_tab(data, notebook):
             print(f"Warning: Categories for tab '{tab_name}' are not in list format: {categories}")
         create_tab(tab_name, categories, data, notebook, base_game, detailed_yaml_file_name)
     
-    print(f"All defined categories: {all_defined_categories}")  # Debugging output
+    #print(f"All defined categories: {all_defined_categories}")  # Debugging output
     
     # Find extra categories not listed in any tab
     extra_categories = [category for category in data.get(base_game, {}) if category not in all_defined_categories]
     
     if extra_categories:
-        print(f"Categories in General tab: {extra_categories}")  # Debugging output
+        #print(f"Categories in General tab: {extra_categories}")  # Debugging output
         create_tab("General", extra_categories, data, notebook, base_game, detailed_yaml_file_name)
 
 def create_tab(tab_name, categories, data, notebook, base_game, detailed_yaml_file_name):
@@ -567,7 +568,7 @@ def create_tab(tab_name, categories, data, notebook, base_game, detailed_yaml_fi
     scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
     scroll_area.setWidget(scroll_content)
 
-    # ✨ Critical fix: allow content to expand horizontally
+    # Critical fix: allow content to expand horizontally
     scroll_content.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
     scroll_content.setMinimumWidth(scroll_area.viewport().width())
 
@@ -794,7 +795,7 @@ def create_other_tab(data, root, notebook):
                 else:
                     return  # No valid selection
 
-                print(f"(move_selected_items) Moving items from {source_list} to {dest_list}: {selected['items']}")
+                #print(f"(move_selected_items) Moving items from {source_list} to {dest_list}: {selected['items']}")
 
                 non_exclusive = current_tab_name_formatted in all_non_exclusive
 
@@ -877,7 +878,7 @@ def create_other_tab(data, root, notebook):
                 # Store selected item texts
                 selected["items"] = [item.text() for item in selected_items]
 
-                print(f"(item_clicked) Selected ({source_list}): {selected['items']}")
+                #print(f"(item_clicked) Selected ({source_list}): {selected['items']}")
 
 
             def clear_selection():
@@ -891,7 +892,7 @@ def create_other_tab(data, root, notebook):
                     return  # Don't clear selection if interacting with buttons or lists
 
                 if selected["item"]:
-                    print("(clear_selection) Selection cleared due to focus loss.")
+                    #print("(clear_selection) Selection cleared due to focus loss.")
                     selected["item"] = None
 
 
@@ -920,7 +921,7 @@ def get_screen_resolution_2(window):
 
 def adjust_window_size(window):
     """ Adjusts the window size dynamically based on the current screen resolution """
-    print("Resize")
+    #print("Resize")
     
     screen_width, screen_height, screen_geometry = get_screen_resolution_2(window)
     
@@ -930,8 +931,8 @@ def adjust_window_size(window):
     
     width = (-(screen_width/(1.5*3840))+1)
     width = math.floor(width * 10) / 10
-    print("Screen Width: " + str(screen_width))
-    print("Width Scaler: " + str(width))
+    #print("Screen Width: " + str(screen_width))
+    #print("Width Scaler: " + str(width))
 
     window_width = int(screen_width * width)   # 25% of screen width
     window_height = int(screen_height * 0.25)  # 25% of screen height
@@ -964,7 +965,7 @@ def update_screen_resolution(window):
 
     if res_old != res_new:
         res_old = res_new
-        print("Current Resolution Workspace Changes To: " + res_new)
+        #print("Current Resolution Workspace Changes To: " + res_new)
         adjust_window_size(window)
 
 def move_event(event):
