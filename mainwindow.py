@@ -58,6 +58,7 @@ class MainWindow(QMainWindow):
                 self.ui = Ui_MainWindow()
                 self.ui.setupUi(self)
                 self.ui.SearchField.textChanged.connect(lambda text: filter_rows(self, text))
+                self.setWindowTitle("YAML Editor 2.0.0")
 
                 self.setStyleSheet("""
                         QScrollArea {

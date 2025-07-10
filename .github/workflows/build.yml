@@ -31,7 +31,7 @@ jobs:
 
       - name: Build Executable
         run: |
-          pyinstaller --onefile --collect-submodules PySide6 --hidden-import=yaml --add-data "Datapackages;Datapackages" mainwindow.py
+          pyinstaller --name "YAML_Editor" --onefile --collect-submodules PySide6 --hidden-import=yaml --add-data "Datapackages;Datapackages" mainwindow.py
 
       - name: Package EXE into ZIP
         run: |
