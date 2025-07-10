@@ -1,0 +1,160 @@
+import yaml
+import re
+import os
+import config
+from add_rows import clear_all_rows, add_both_rows
+from tab_manager import clear_tabs, add_tabs_for_game
+from paths import get_exe_folder
+from PySide6.QtWidgets import QWidget
+
+def load_yaml_file(yaml_path):
+    if os.path.exists(yaml_path):
+        with open(yaml_path, 'r', encoding='utf-8') as f:
+            return yaml.safe_load(f)
+    else:
+        print(f"[WARNING] No YAML found at '{yaml_path}'.")
+        return {}
+
+def extract_comments(yaml_path, selected_game_name):
+    with open(yaml_path, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+
+    comments = {}
+    current_key = None
+    for line in lines:
+        if line.strip().startswith("#"):
+            comment = line.strip().lstrip("#").strip()
+            if current_key:
+                comments.setdefault(current_key, []).append(comment)
+        elif re.match(r'^\s*\w+:', line):
+            match = re.match(r'^\s*(\w+):', line)
+            if match:
+                current_key = match.group(1)
+    return comments
+
+def resolve_selected_option(value):
+    if isinstance(value, dict):
+        if value:
+            return str(max(value, key=lambda k: value[k]))
+    elif isinstance(value, (str, int, float)):
+        return str(value)
+    return None
+
+def prepare_row_data(base_yaml_path, selected_game_path, selected_game_name):
+    # Load both YAML files
+    base_yaml_data = load_yaml_file(base_yaml_path)
+    selected_yaml_data = load_yaml_file(selected_game_path)
+
+    # Extract section from both
+    base_game_data = base_yaml_data.get(selected_game_name)
+    selected_game_values = selected_yaml_data.get(selected_game_name, {})
+
+    if not base_game_data:
+        print(f"[ERROR] Game '{selected_game_name}' not found in base YAML.")
+        return None, []
+
+    comments = extract_comments(base_yaml_path, selected_game_name)
+
+    row_data = []
+
+    for name, base_options in base_game_data.items():
+        if isinstance(base_options, dict):
+            description = "\n".join(comments.get(name, []))
+            # Start with base options
+            final_options = {str(k): int(v) for k, v in base_options.items()}
+
+            # Check overrides from selected YAML
+            if name in selected_game_values:
+                selected_value = selected_game_values[name]
+                if isinstance(selected_value, dict):
+                    # Merge and also add extra keys from selected YAML only if value != 0
+                    for k, v in selected_value.items():
+                        if int(v) != 0:
+                            final_options[str(k)] = int(v)
+                else:
+                    # Single selected option → set it to 50, others to 0
+                    for k in final_options.keys():
+                        final_options[k] = 50 if str(k) == str(selected_value) else 0
+                    # Also add it if it doesn't exist yet
+                    if str(selected_value) not in final_options:
+                        final_options[str(selected_value)] = 50
+
+            # Determine base_yaml_selected (option with 50 in base YAML)
+            base_yaml_selected = None
+            for option_name, value in base_options.items():
+                if value == 50:
+                    base_yaml_selected = str(option_name)
+                    break
+
+            # Determine selected_yaml_selected (highest weighted option)
+            selected_yaml_selected = None
+            max_value = max(final_options.values(), default=None)
+            if max_value is not None:
+                for option_name, value in final_options.items():
+                    if value == max_value:
+                        selected_yaml_selected = str(option_name)
+                        break
+
+            row_data.append({
+                "name": name,
+                "items": final_options,  # Final merged dictionary including extras
+                "description": description,
+                "base_yaml_selected": base_yaml_selected,
+                "selected_yaml_selected": selected_yaml_selected
+            })
+
+    return (base_yaml_path, selected_game_path), row_data
+
+def load_yaml_UI(main_window, base_yaml_path, selected_game_path, selected_game_name):
+    paths, rows = prepare_row_data(base_yaml_path, selected_game_path, selected_game_name)
+    if not rows:
+        return
+
+    # Load main fields from the selected YAML
+    selected_yaml_data = load_yaml_file(selected_game_path)
+    main_fields = ["name", "description", "game"]
+    for field in main_fields:
+        if field in selected_yaml_data:
+            if field == "name":
+                main_window.ui.NameLineEdit.setText(str(selected_yaml_data[field]))
+            elif field == "description":
+                description = str(selected_yaml_data[field])
+                if "default" in description.lower() or "template" in description.lower()or "example" in description.lower():
+                    description = "Generated by RayStormThunder's YAML creator"
+                main_window.ui.DescriptionLineEdit.setText(description)
+            elif field == "game":
+                main_window.ui.GameLineEdit.setText(str(selected_yaml_data[field]))
+                
+    base_yaml_data = load_yaml_file(base_yaml_path)
+    game_data = base_yaml_data.get(selected_game_name, {})
+
+    clear_tabs(main_window)
+    tabbed_keys = add_tabs_for_game(main_window, game_data, selected_game_path, selected_game_name)
+
+    # Print the paths (once, globally)
+    if config.debug_flag:
+        print(paths[0])
+        print(paths[1])
+
+    # Clear previous rows
+    clear_all_rows(main_window)
+
+    for row in rows:
+        if row["name"] in tabbed_keys:
+            continue  # Skip rows that were added as tabs
+
+        if config.debug_flag:
+            print(f"{row['name']} Value Is:")
+            print(f"[base_yaml_path]: {row['base_yaml_selected']}")
+            print(f"[selected_path]: {row['selected_yaml_selected']}")
+            print()
+
+        add_both_rows(
+            main_window,
+            name=row["name"],
+            items=row["items"],
+            description=row["description"],
+            starting_item=row["selected_yaml_selected"]
+        )
+
+

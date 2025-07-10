@@ -1,0 +1,10 @@
+{
+    "files": [
+        "added_removed_lists.ui",
+        "main.ui",
+        "mainwindow.py",
+        "row.ui",
+        "weighted_row.ui",
+        "weighted_sub_row.ui"
+    ]
+}

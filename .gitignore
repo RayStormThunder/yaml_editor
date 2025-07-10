@@ -1,33 +1,107 @@
-# Ignore local build files
-BUILD.bat
-
-# Ignore info.txt
-info.txt
-
-# Ignore Python compiled files
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# Ignore PyInstaller build files
-dist/
-build/
-release/
-*.spec
-
-# Ignore virtual environments (if using venv)
-venv/
-.env/
-
-# Ignore logs and temporary files
-*.log
-*.tmp
+# ----------------------------------------------------------------------------
+# General temporary & backup files
+# ----------------------------------------------------------------------------
+*~
+*.autosave
+*.a
+*.core
+*.moc
+*.o
+*.obj
+*.orig
+*.rej
+*.so
+*.so.*
+*_pch.h.cpp
+*_resource.rc
+*.qm
+.#*
+*.*#
+core
+!core/
+tags
 .DS_Store
+.directory
+*.debug
+Makefile*
+*.prl
+*.app
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
 Thumbs.db
+*.res
+*.rc
+/.qmake.cache
+/.qmake.stash
 
-# Ignore system files (Windows/macOS/Linux)
-*.swp
-*.swo
-.idea/
-.vscode/
+# ----------------------------------------------------------------------------
+# Qt Creator generated files
+# ----------------------------------------------------------------------------
+*.pro.user*
+*.qbs.user*
+CMakeLists.txt.user*
+.qtcreator*
+
+# ----------------------------------------------------------------------------
+# XEmacs temporary files
+# ----------------------------------------------------------------------------
+*.flc
+
+# ----------------------------------------------------------------------------
+# Vim temporary files
+# ----------------------------------------------------------------------------
+.*.swp
+
+# ----------------------------------------------------------------------------
+# Custom project-specific ignores
+# ----------------------------------------------------------------------------
+*.bat
+gui_data.json
+
+/Extracted_Datapackages/
+/YAMLS/
+/GUI/
+
+/release/
+/dist/
+/build/
+/__pycache__/
+/Datapackages/Extracted_Datapackages/
+
+# ----------------------------------------------------------------------------
+# Visual Studio generated files
+# ----------------------------------------------------------------------------
+*.ib_pdb_index
+*.idb
+*.ilk
+*.pdb
+*.sln
+*.suo
+*.vcproj
+*vcproj.*.*.user
+*.ncb
+*.sdf
+*.opensdf
+*.vcxproj
+*vcxproj.*
+
+# ----------------------------------------------------------------------------
+# MinGW generated files
+# ----------------------------------------------------------------------------
+*.Debug
+*.Release
+
+# ----------------------------------------------------------------------------
+# Python byte code
+# ----------------------------------------------------------------------------
+*.pyc
+
+# ----------------------------------------------------------------------------
+# Other generated directories
+# ----------------------------------------------------------------------------
+.moc/
+.obj/
+.pch/
+.rcc/
+.uic/
