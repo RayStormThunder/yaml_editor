@@ -33,21 +33,23 @@ jobs:
         run: |
           pyinstaller --name "YAML_Editor" --onefile --collect-submodules PySide6 --hidden-import=yaml --add-data "Datapackages;Datapackages" mainwindow.py
 
-      - name: Package EXE into ZIP
+      - name: Move Build into yaml_editor Folder
         run: |
-          mkdir release
-          mv dist/mainwindow.exe release/mainwindow.exe
-          cd release
-          powershell -Command "Compress-Archive -Path mainwindow.exe -DestinationPath mainwindow.zip"
+          mkdir yaml_editor
+          mkdir yaml_editor/release
+          mv dist yaml_editor/dist
+          mv "yaml_editor/dist/YAML_Editor.exe" "yaml_editor/release/YAML_Editor.exe"
+          cd yaml_editor/release
+          powershell -Command "Compress-Archive -Path 'YAML_Editor.exe' -DestinationPath 'YAML_Editor.zip'"
 
       - name: Upload ZIP as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mainwindow
-          path: release/mainwindow.zip
+          name: YAML_Editor
+          path: yaml_editor/release/YAML_Editor.zip
 
       - name: Upload ZIP to GitHub Release (If Release Created)
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v1
         with:
-          files: release/mainwindow.zip
+          files: yaml_editor/release/YAML_Editor.zip
