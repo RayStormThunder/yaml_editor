@@ -14,45 +14,61 @@ def move_yaml_files(main_window, yaml_base_folder):
             try:
                 with open(file_path, 'r', encoding='utf-8') as f:
                     data = yaml.safe_load(f)
-                    if isinstance(data, dict) and "game" in data:
-                        game_name = str(data["game"])
-                        game_folder = os.path.join(yaml_base_folder, game_name)
-                        os.makedirs(game_folder, exist_ok=True)
-                        main_window.moved_yaml_mapping[file] = game_name
+                if isinstance(data, dict) and "game" in data:
+                    game_name = str(data["game"])
+                    game_folder = os.path.join(yaml_base_folder, game_name)
+                    os.makedirs(game_folder, exist_ok=True)
+                    main_window.moved_yaml_mapping[file] = game_name
 
-                        # Identify keys to convert
-                        game_data = data.get(game_name, {})
-                        replacements = []
-                        for key, value in list(game_data.items()):
-                            if isinstance(value, (str, int, float)):
-                                pattern = re.compile(
-                                    rf'^(\s*){re.escape(key)}:\s*{re.escape(str(value))}(?:\s*#.*)?$', re.MULTILINE
-                                )
-                                replacements.append((pattern, key, value))
+                    target_filename = f"{game_name}.yaml"
+                    target_path = os.path.join(yaml_base_folder, target_filename)
 
-                        # Do text replacement with indentation
-                        if replacements:
-                            with open(file_path, 'r', encoding='utf-8') as f_in:
-                                text = f_in.read()
+                    if file != target_filename:
+                        if os.path.exists(target_path):
+                            # Target already exists, move this file into the game folder
+                            dest_path = os.path.join(game_folder, file)
+                            shutil.move(file_path, dest_path)
+                            continue  # Skip further processing
+                        else:
+                            # Safe to rename
+                            new_path = os.path.join(yaml_base_folder, target_filename)
+                            os.rename(file_path, new_path)
+                            file_path = new_path
+                            file = target_filename
 
-                            for pattern, key, value in replacements:
-                                match = pattern.search(text)
-                                if match:
-                                    indent = match.group(1)
-                                    replacement = f"{indent}{key}:\n{indent}  {value}: 50"
-                                    text = pattern.sub(replacement, text)
-                                    if config.debug_flag:
-                                        print(f"[INFO] Replaced '{key}: {value}' with block in '{file}'")
-                                else:
-                                    if config.debug_flag:
-                                        print(f"[WARNING] Could not find match for '{key}: {value}' in '{file}'")
+                    # Identify keys to convert
+                    game_data = data.get(game_name, {})
+                    replacements = []
+                    for key, value in list(game_data.items()):
+                        if isinstance(value, (str, int, float)):
+                            pattern = re.compile(
+                                rf'^(\s*){re.escape(key)}:\s*{re.escape(str(value))}(?:\s*#.*)?$', re.MULTILINE
+                            )
+                            replacements.append((pattern, key, value))
 
-                            with open(file_path, 'w', encoding='utf-8') as f_out:
-                                f_out.write(text)
+                    # Do text replacement with indentation
+                    if replacements:
+                        with open(file_path, 'r', encoding='utf-8') as f_in:
+                            text = f_in.read()
 
-                        # Always copy the file (overwrite)
-                        dest_path = os.path.join(game_folder, file)
-                        shutil.copy2(file_path, dest_path)
+                        for pattern, key, value in replacements:
+                            match = pattern.search(text)
+                            if match:
+                                indent = match.group(1)
+                                replacement = f"{indent}{key}:\n{indent}  {value}: 50"
+                                text = pattern.sub(replacement, text)
+                                if config.debug_flag:
+                                    print(f"[INFO] Replaced '{key}: {value}' with block in '{file}'")
+                            else:
+                                if config.debug_flag:
+                                    print(f"[WARNING] Could not find match for '{key}: {value}' in '{file}'")
+
+                        with open(file_path, 'w', encoding='utf-8') as f_out:
+                            f_out.write(text)
+
+                    # Always copy to the game folder (keep original in YAMLS)
+                    dest_path = os.path.join(game_folder, file)
+                    shutil.copy2(file_path, dest_path)
 
             except Exception as e:
                 print(f"[ERROR] Unexpected error processing {file_path}: {e}")
@@ -116,13 +132,19 @@ def rebuild_game_buttons(main_window, game_names, prev_game):
 
     return game_changed, selected_game
 
+def get_latest_modification_time(folder):
+    latest_time = os.path.getmtime(folder)
+    for root, dirs, files in os.walk(folder):
+        for name in files:
+            if name.lower().endswith('.yaml'):
+                file_path = os.path.join(root, name)
+                latest_time = max(latest_time, os.path.getmtime(file_path))
+    return latest_time
+
 def slots_need_refresh(main_window, yaml_base_folder):
-    last_modified = os.path.getmtime(yaml_base_folder) if os.path.exists(yaml_base_folder) else None
-
+    last_modified = get_latest_modification_time(yaml_base_folder) if os.path.exists(yaml_base_folder) else None
     prev_modified = getattr(main_window, 'prev_slot_modified_time', None)
-
     if prev_modified != last_modified:
-        # Folder modification time changed; store the new time
         main_window.prev_slot_modified_time = last_modified
         return True
     return False
@@ -131,6 +153,7 @@ def refresh_games_and_slots(main_window, prev_game, prev_slot, override):
     yaml_base_folder = os.path.join(get_exe_folder(), "YAMLS")
     os.makedirs(yaml_base_folder, exist_ok=True)
     modification = slots_need_refresh(main_window, yaml_base_folder)
+
     if modification or override:
         main_window.moved_yaml_mapping = {}
         move_yaml_files(main_window, yaml_base_folder)
@@ -139,8 +162,7 @@ def refresh_games_and_slots(main_window, prev_game, prev_slot, override):
         game_changed, selected_game = rebuild_game_buttons(main_window, game_names, prev_game)
 
         if selected_game:
-            if game_changed:
-                refresh_slots(main_window, selected_game, prev_slot)
+            refresh_slots(main_window, selected_game, prev_slot)
 
         selected_slot = get_selected_button(main_window.slot_group) if hasattr(main_window, 'slot_group') else None
         main_window.current_yaml_path = os.path.join(yaml_base_folder, selected_game, selected_slot) if selected_game and selected_slot else None

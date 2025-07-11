@@ -3,10 +3,12 @@ import sys
 import os
 import yaml
 import shutil
+import platform
 
 #Pyside
 from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout
 from PySide6.QtCore import QTimer
+from PySide6.QtGui import QPalette, QColor
 
 #python imports
 import config
@@ -23,6 +25,123 @@ from ui_main import Ui_MainWindow
 from ui_row import Ui_BasicRow
 from ui_weighted_row import Ui_WeightedRow
 from ui_weighted_sub_row import Ui_SepecificSetting
+
+def is_windows_11():
+        version = platform.version().split('.')
+        try:
+                build = int(version[2])
+                return build >= 22000  # Windows 11 builds start from 22000
+        except (IndexError, ValueError):
+                return False
+
+def apply_dark_theme(app):
+        app.setStyleSheet("""
+                /* Background & Text Colors Only */
+                QWidget {
+                        background-color: #1e1e1e;
+                        color: #d4d4d4;
+                }
+
+                QFrame {
+                        background-color: #2c2c2c;
+                }
+
+                QLineEdit, QPlainTextEdit, QTextEdit {
+                        background-color: #2d2d2d;
+                        color: #d4d4d4;
+                }
+
+                QComboBox {
+                        background-color: #2d2d2d;
+                        color: #d4d4d4;
+                }
+
+                QPushButton {
+                        background-color: #2d2d2d;
+                        color: #d4d4d4;
+                }
+
+                QCheckBox, QRadioButton {
+                        color: #d4d4d4;
+                }
+
+                QRadioButton::indicator {
+                        width: 16px;
+                        height: 16px;
+                        border: 2px solid #d4d4d4;
+                        border-radius: 8px;  /* Half of width/height makes it a circle */
+                        background-color: #2d2d2d;
+                }
+
+                QScrollArea {
+                        background-color: #1e1e1e;
+                }
+
+                QScrollArea > QWidget > QWidget {
+                        background-color: #1e1e1e;
+                }
+
+                QScrollArea QWidget {
+                        background-color: #1e1e1e;
+                }
+
+                QRadioButton::indicator:checked {
+                        background-color: #d4d4d4;
+                }
+
+                QTabWidget::pane {
+                        background-color: #2c2c2c;  /* Background behind tabs and content */
+                }
+
+                QCheckBox::indicator {
+                        width: 16px;
+                        height: 16px;
+                        border: 2px solid #d4d4d4;  /* White border */
+                        background-color: #2d2d2d;  /* Dark inside when unchecked */
+                }
+
+                QCheckBox::indicator:checked {
+                        background-color: #d4d4d4;  /* White fill when checked */
+                }
+
+                QTabWidget QWidget {
+                        background-color: #2c2c2c;
+                }
+
+                QTabBar::tab {
+                        background-color: #1e1e1e;
+                        color: #d4d4d4;
+                        border: 2px solid #2d2d2d;
+                        border-radius: 6px;  /* Rounded corner */
+                        padding: 4px;
+                }
+
+                QTabBar::tab:selected {
+                        background-color: #2d2d2d;
+                        border: 2px solid #2d2d2d;
+                        border-radius: 6px;
+                }
+
+                QTabBar::tab:hover {
+                        background-color: #2d2d2d;
+                        border: 2px solid #2d2d2d;
+                        border-radius: 6px;
+                }
+
+                QListWidget, QListView, QTreeView {
+                        background-color: #2d2d2d;
+                        color: #d4d4d4;
+                }
+
+                QScrollBar {
+                        background-color: #2d2d2d;
+                }
+
+                QScrollBar::handle {
+                        background-color: #555555;
+                }
+        """)
+
 
 def extract_datapackages_and_create_yaml_folder():
         exe_folder = get_exe_folder()
@@ -113,6 +232,18 @@ class MainWindow(QMainWindow):
                 self.ui.DescriptionText.setVisible(not hide_enabled)
                 self.ui.HideDescriptionTextEnabled.stateChanged.connect(self.on_hide_description_toggle)
                 self.ui.SaveYamlButton.clicked.connect(self.on_save_yaml_clicked)
+
+                # Connect signals to update SaveYamlButton text
+                self.ui.NameLineEdit.textChanged.connect(self.update_save_yaml_button_text)
+                self.ui.GameLineEdit.textChanged.connect(self.update_save_yaml_button_text)
+
+                # Initial set of the button text
+                self.update_save_yaml_button_text()
+
+        def update_save_yaml_button_text(self):
+                name = self.ui.NameLineEdit.text()
+                game = self.ui.GameLineEdit.text()
+                self.ui.SaveYamlButton.setText(f"Save YAML as '{name}_{game}.yaml'")
 
         def on_save_yaml_clicked(self):
                 from save_yaml import save_yaml
@@ -205,6 +336,8 @@ if __name__ == "__main__":
             extract_datapackages_and_create_yaml_folder()
     extract_datapackages()
     app = QApplication([])
+    if not is_windows_11():
+        apply_dark_theme(app)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())

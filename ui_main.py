@@ -146,7 +146,7 @@ class Ui_MainWindow(object):
         self.ScrollMain.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 614, 488))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 614, 486))
         self.verticalLayout_5 = QVBoxLayout(self.scrollAreaWidgetContents_3)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.Spacer = QSpacerItem(20, 495, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
@@ -166,11 +166,6 @@ class Ui_MainWindow(object):
         self.MainLayout.setStretch(1, 1)
 
         self.verticalLayout_4.addLayout(self.MainLayout)
-
-        self.SaveYamlButton = QPushButton(self.General)
-        self.SaveYamlButton.setObjectName(u"SaveYamlButton")
-
-        self.verticalLayout_4.addWidget(self.SaveYamlButton)
 
         self.verticalLayout_4.setStretch(1, 1)
         self.MainTabs.addTab(self.General, "")
@@ -200,7 +195,7 @@ class Ui_MainWindow(object):
         self.ScrollGame.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 218, 239))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 218, 235))
         self.verticalLayout_7 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.Spacer1 = QSpacerItem(20, 221, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
@@ -233,7 +228,7 @@ class Ui_MainWindow(object):
         self.ScrollSlot.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 218, 233))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 218, 235))
         self.verticalLayout_6 = QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.Spacer2 = QSpacerItem(20, 221, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
@@ -243,11 +238,6 @@ class Ui_MainWindow(object):
         self.ScrollSlot.setWidget(self.scrollAreaWidgetContents_2)
 
         self.verticalLayout_3.addWidget(self.ScrollSlot)
-
-        self.LoadYamlButton = QPushButton(self.SlotSelect)
-        self.LoadYamlButton.setObjectName(u"LoadYamlButton")
-
-        self.verticalLayout_3.addWidget(self.LoadYamlButton)
 
 
         self.Selection.addWidget(self.SlotSelect)
@@ -259,6 +249,23 @@ class Ui_MainWindow(object):
         self.MainHorizontal.setStretch(1, 1)
 
         self.verticalLayout_2.addLayout(self.MainHorizontal)
+
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.SaveYamlButton = QPushButton(self.centralwidget)
+        self.SaveYamlButton.setObjectName(u"SaveYamlButton")
+
+        self.horizontalLayout_3.addWidget(self.SaveYamlButton)
+
+        self.LoadYamlButton = QPushButton(self.centralwidget)
+        self.LoadYamlButton.setObjectName(u"LoadYamlButton")
+
+        self.horizontalLayout_3.addWidget(self.LoadYamlButton)
+
+        self.horizontalLayout_3.setStretch(0, 4)
+        self.horizontalLayout_3.setStretch(1, 1)
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_3)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
@@ -292,10 +299,10 @@ class Ui_MainWindow(object):
 "li.checked::marker { content: \"\\2612\"; }\n"
 "</style></head><body style=\" font-family:'Segoe UI'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", None))
-        self.SaveYamlButton.setText(QCoreApplication.translate("MainWindow", u"Save YAML as '{slot}_{game}.yaml'", None))
         self.MainTabs.setTabText(self.MainTabs.indexOf(self.General), QCoreApplication.translate("MainWindow", u"General", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Game", None))
         self.SlotSelect_2.setText(QCoreApplication.translate("MainWindow", u"YAML", None))
+        self.SaveYamlButton.setText(QCoreApplication.translate("MainWindow", u"Save YAML as '{slot}_{game}.yaml'", None))
         self.LoadYamlButton.setText(QCoreApplication.translate("MainWindow", u"LOAD YAML", None))
     # retranslateUi
 
