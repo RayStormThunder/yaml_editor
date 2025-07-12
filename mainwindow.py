@@ -4,6 +4,7 @@ import os
 import yaml
 import shutil
 import platform
+import winreg
 
 #Pyside
 from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout
@@ -25,6 +26,17 @@ from ui_main import Ui_MainWindow
 from ui_row import Ui_BasicRow
 from ui_weighted_row import Ui_WeightedRow
 from ui_weighted_sub_row import Ui_SepecificSetting
+
+def is_dark_mode():
+        try:
+                reg_key = winreg.OpenKey(
+                        winreg.HKEY_CURRENT_USER,
+                        r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+                )
+                value, _ = winreg.QueryValueEx(reg_key, "AppsUseLightTheme")
+                return value == 0  # 0 = dark mode, 1 = light mode
+        except Exception:
+                return False  # Assume light mode if detection fails
 
 def is_windows_11():
         version = platform.version().split('.')
@@ -336,7 +348,7 @@ if __name__ == "__main__":
             extract_datapackages_and_create_yaml_folder()
     extract_datapackages()
     app = QApplication([])
-    if not is_windows_11():
+    if not is_windows_11() or not is_dark_mode():
         apply_dark_theme(app)
     window = MainWindow()
     window.show()

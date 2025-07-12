@@ -273,8 +273,11 @@ def filter_rows(main_window, text):
 
         if not matches:
             for child in row_widget.findChildren(QComboBox):
-                if text.lower() in child.currentText().lower():
-                    matches = True
+                for i in range(child.count()):
+                    if text.lower() in child.itemText(i).lower():
+                        matches = True
+                        break
+                if matches:
                     break
 
         if not matches:

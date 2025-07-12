@@ -16,4 +16,4 @@ def get_exe_folder():
     return exe_dir
 
 def get_gui_data_file():
-    return os.path.join(get_base_folder(), "gui_data.json")
+    return os.path.join(get_exe_folder(), "gui_data.json")
