@@ -23,7 +23,7 @@ def extract_datapackages():
             try:
                 data = json.load(f)
             except json.JSONDecodeError:
-                print(f"[ERROR] Invalid JSON in {file_name}, skipping...")
+                print(f"[datapackage_conversion] ERROR] Invalid JSON in {file_name}, skipping...")
                 continue
 
             games = data.get("games", {})
@@ -49,7 +49,7 @@ def extract_datapackages():
                     json.dump(location_names, out_f, indent=2, ensure_ascii=False)
 
                 if config.debug_flag:
-                    print(f"[INFO] Extracted data for game '{game_name}' from '{file_name}'.")
+                    print(f"[datapackage_conversion] INFO] Extracted data for game '{game_name}' from '{file_name}'.")
 
 def get_extracted_data(game, data_type, group=None):
     base_folder = os.path.join(get_exe_folder(), "Datapackages", "Extracted_Datapackages")

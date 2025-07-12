@@ -42,7 +42,7 @@ async def fetch_and_save_datapackage(player_name, game_name, port):
 
     for websocket_url in urls_to_try:
         try:
-            print(f"[INFO] Trying to connect to {websocket_url}...")
+            print(f"[server] [INFO] Trying to connect to {websocket_url}...")
             async with websockets.connect(websocket_url) as websocket:
                 # Send Connect packet (no password)
                 connect_packet = [{
@@ -57,7 +57,7 @@ async def fetch_and_save_datapackage(player_name, game_name, port):
                     'slot_data': False
                 }]
                 await websocket.send(encode(connect_packet))
-                print(f"[INFO] Connected to {websocket_url}")
+                print(f"[server] [INFO] Connected to {websocket_url}")
 
                 # Listen for packets
                 while True:
@@ -71,7 +71,7 @@ async def fetch_and_save_datapackage(player_name, game_name, port):
                         elif packet.get("cmd") == "RoomInfo":
                             await websocket.send(encode([{"cmd": "GetDataPackage", "games": [game_name]}]))
         except Exception as e:
-            print(f"[WARNING] Failed to connect to {websocket_url}: {e}")
+            print(f"[server] [WARNING] Failed to connect to {websocket_url}: {e}")
     print("[ERROR] Unable to connect using any method.")
 
 def save_datapackage(packet):
@@ -81,4 +81,4 @@ def save_datapackage(packet):
     output_path = os.path.join(output_dir, f"datapackage_{random_number}.json")
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(packet, f, indent=2)
-    print(f"[INFO] Saved to {output_path}")
+    print(f"[server] [INFO] Saved to {output_path}")

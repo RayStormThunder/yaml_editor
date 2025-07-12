@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.3
+## Created by: Qt User Interface Compiler version 6.8.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -40,6 +40,21 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.TopBar = QHBoxLayout()
         self.TopBar.setObjectName(u"TopBar")
+        self.YAMLGroup = QHBoxLayout()
+        self.YAMLGroup.setObjectName(u"YAMLGroup")
+        self.YAMLName = QLabel(self.frame)
+        self.YAMLName.setObjectName(u"YAMLName")
+
+        self.YAMLGroup.addWidget(self.YAMLName)
+
+        self.YAMLLineEdit = QLineEdit(self.frame)
+        self.YAMLLineEdit.setObjectName(u"YAMLLineEdit")
+
+        self.YAMLGroup.addWidget(self.YAMLLineEdit)
+
+
+        self.TopBar.addLayout(self.YAMLGroup)
+
         self.NameGroup = QHBoxLayout()
         self.NameGroup.setObjectName(u"NameGroup")
         self.NameLabel = QLabel(self.frame)
@@ -82,18 +97,14 @@ class Ui_MainWindow(object):
 
         self.DescriptionGroup.addWidget(self.DescriptionLineEdit)
 
+        self.DescriptionGroup.setStretch(1, 2)
 
         self.TopBar.addLayout(self.DescriptionGroup)
 
-        self.PatcherVersion = QLabel(self.frame)
-        self.PatcherVersion.setObjectName(u"PatcherVersion")
-
-        self.TopBar.addWidget(self.PatcherVersion)
-
-        self.TopBar.setStretch(0, 2)
-        self.TopBar.setStretch(1, 2)
+        self.TopBar.setStretch(0, 5)
+        self.TopBar.setStretch(1, 4)
         self.TopBar.setStretch(2, 4)
-        self.TopBar.setStretch(3, 1)
+        self.TopBar.setStretch(3, 8)
 
         self.horizontalLayout.addLayout(self.TopBar)
 
@@ -283,10 +294,10 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        self.YAMLName.setText(QCoreApplication.translate("MainWindow", u"YAML Prefix Name:", None))
         self.NameLabel.setText(QCoreApplication.translate("MainWindow", u"Slot:", None))
         self.GameLabel.setText(QCoreApplication.translate("MainWindow", u"Game:", None))
         self.DescriptionLabel.setText(QCoreApplication.translate("MainWindow", u"Description:", None))
-        self.PatcherVersion.setText(QCoreApplication.translate("MainWindow", u"Archipelago Version: 0.6.1", None))
         self.SearchLabel.setText(QCoreApplication.translate("MainWindow", u"Search:", None))
         self.WeightedSettingsEnabled.setText(QCoreApplication.translate("MainWindow", u"Enter Weighted Option Mode", None))
         self.HideDescriptionTextEnabled.setText(QCoreApplication.translate("MainWindow", u"Hide Setting Description", None))

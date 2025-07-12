@@ -20,17 +20,17 @@ def move_yaml_files(main_window, yaml_base_folder):
                     os.makedirs(game_folder, exist_ok=True)
                     main_window.moved_yaml_mapping[file] = game_name
 
-                    target_filename = f"{game_name}.yaml"
+                    target_filename = f"{game_name}_Template.yaml"
                     target_path = os.path.join(yaml_base_folder, target_filename)
 
                     if file != target_filename:
-                        if os.path.exists(target_path):
-                            # Target already exists, move this file into the game folder
+                        if os.path.exists(os.path.join(yaml_base_folder, f"{game_name}_Template.yaml")):
+                            # Target {game}.yaml already exists, move this file into game folder without renaming
                             dest_path = os.path.join(game_folder, file)
                             shutil.move(file_path, dest_path)
                             continue  # Skip further processing
                         else:
-                            # Safe to rename
+                            # Rename to {game}_Template.yaml
                             new_path = os.path.join(yaml_base_folder, target_filename)
                             os.rename(file_path, new_path)
                             file_path = new_path
@@ -58,20 +58,20 @@ def move_yaml_files(main_window, yaml_base_folder):
                                 replacement = f"{indent}{key}:\n{indent}  {value}: 50"
                                 text = pattern.sub(replacement, text)
                                 if config.debug_flag:
-                                    print(f"[INFO] Replaced '{key}: {value}' with block in '{file}'")
+                                    print(f"[game_and_slot_setup] [INFO] Replaced '{key}: {value}' with block in '{file}'")
                             else:
                                 if config.debug_flag:
-                                    print(f"[WARNING] Could not find match for '{key}: {value}' in '{file}'")
+                                    print(f"[game_and_slot_setup] [WARNING] Could not find match for '{key}: {value}' in '{file}'")
 
                         with open(file_path, 'w', encoding='utf-8') as f_out:
                             f_out.write(text)
 
-                    # Always copy to the game folder (keep original in YAMLS)
-                    dest_path = os.path.join(game_folder, file)
+                    # Always copy to the game folder as {game}.yaml
+                    dest_path = os.path.join(game_folder, f"{game_name}.yaml")
                     shutil.copy2(file_path, dest_path)
 
             except Exception as e:
-                print(f"[ERROR] Unexpected error processing {file_path}: {e}")
+                print(f"[game_and_slot_setup] [ERROR] Unexpected error processing {file_path}: {e}")
                         
 def scan_game_names(yaml_base_folder):
     game_names = set()
@@ -87,7 +87,7 @@ def scan_game_names(yaml_base_folder):
                             if isinstance(data, dict) and "game" in data:
                                 game_names.add(str(data["game"]))
                     except Exception as e:
-                        print(f"[WARNING] Failed to load {file_path}: {e}")
+                        print(f"[game_and_slot_setup] [WARNING] Failed to load {file_path}: {e}")
     return sorted(game_names)
 
 def rebuild_game_buttons(main_window, game_names, prev_game):

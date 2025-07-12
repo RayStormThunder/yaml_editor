@@ -13,6 +13,7 @@ from PySide6.QtGui import QPalette, QColor
 
 #python imports
 import config
+from version import VERSION
 from add_rows import add_both_rows, filter_rows
 from description import set_description_text, show_description_text
 from game_and_slot_setup import refresh_games_and_slots
@@ -166,30 +167,31 @@ def extract_datapackages_and_create_yaml_folder():
         if not os.path.exists(dest_path):
                 try:
                         shutil.copytree(source_path, dest_path)
-                        print(f"[INFO] Extracted Datapackages to {dest_path}")
+                        print(f"[mainwindow] [INFO] Extracted Datapackages to {dest_path}")
                 except Exception as e:
-                        print(f"[ERROR] Failed to extract Datapackages: {e}")
+                        print(f"[mainwindow] [ERROR] Failed to extract Datapackages: {e}")
         else:
-                print(f"[INFO] Datapackages already exists at {dest_path}")
+                print(f"[mainwindow] [INFO] Datapackages already exists at {dest_path}")
 
         # Create YAMLS folder if it doesn't exist
         yamls_path = os.path.join(exe_folder, "YAMLS")
         if not os.path.exists(yamls_path):
                 try:
                         os.makedirs(yamls_path)
-                        print(f"[INFO] Created YAMLS folder at {yamls_path}")
+                        print(f"[mainwindow] [INFO] Created YAMLS folder at {yamls_path}")
                 except Exception as e:
-                        print(f"[ERROR] Failed to create YAMLS folder: {e}")
+                        print(f"[mainwindow] [ERROR] Failed to create YAMLS folder: {e}")
         else:
-                print(f"[INFO] YAMLS folder already exists at {yamls_path}")
+                print(f"[mainwindow] [INFO] YAMLS folder already exists at {yamls_path}")
 
 class MainWindow(QMainWindow):
         def __init__(self, parent=None):
                 super().__init__(parent)
+                global VERSION
                 self.ui = Ui_MainWindow()
                 self.ui.setupUi(self)
                 self.ui.SearchField.textChanged.connect(lambda text: filter_rows(self, text))
-                self.setWindowTitle("YAML Editor 2.0.0")
+                self.setWindowTitle(f"YAML Editor {VERSION}")
 
                 self.setStyleSheet("""
                         QScrollArea {
@@ -246,16 +248,29 @@ class MainWindow(QMainWindow):
                 self.ui.SaveYamlButton.clicked.connect(self.on_save_yaml_clicked)
 
                 # Connect signals to update SaveYamlButton text
-                self.ui.NameLineEdit.textChanged.connect(self.update_save_yaml_button_text)
+                self.ui.YAMLLineEdit.textChanged.connect(self.update_save_yaml_button_text)
                 self.ui.GameLineEdit.textChanged.connect(self.update_save_yaml_button_text)
 
                 # Initial set of the button text
                 self.update_save_yaml_button_text()
 
+                # Server Connection
+                self.row_check_timer = QTimer(self)
+                self.row_check_timer.timeout.connect(self.check_if_rows_exist_and_set_text)
+                self.row_check_timer.start(100)
+
         def update_save_yaml_button_text(self):
-                name = self.ui.NameLineEdit.text()
+            has_rows = False
+            for i in range(self.ui.ScrollMain.widget().layout().count()):
+                    row = self.ui.ScrollMain.widget().layout().itemAt(i).widget()
+                    if row:
+                            has_rows = True
+                            break
+
+            if has_rows:
+                name = self.ui.YAMLLineEdit.text()
                 game = self.ui.GameLineEdit.text()
-                self.ui.SaveYamlButton.setText(f"Save YAML as '{name}_{game}.yaml'")
+                self.ui.SaveYamlButton.setText(f"Save YAML as '{name}-{game}.yaml'")
 
         def on_save_yaml_clicked(self):
                 from save_yaml import save_yaml
@@ -298,6 +313,19 @@ class MainWindow(QMainWindow):
                 if self.selected_slot:
                         set_global_setting("Last Selected Slot", self.selected_slot)
 
+        def check_if_rows_exist_and_set_text(self):
+            has_rows = False
+            for i in range(self.ui.ScrollMain.widget().layout().count()):
+                row = self.ui.ScrollMain.widget().layout().itemAt(i).widget()
+                if row:
+                    has_rows = True
+                    break
+
+            if has_rows:
+                self.ui.DescriptionLabel.setText("Description:")
+            else:
+                self.ui.DescriptionLabel.setText("Server Address:")
+                self.ui.SaveYamlButton.setText(f"Extract Datapackage with Server Connection")
 
         def on_load_yaml_clicked(self):
             if hasattr(self, "current_yaml_path") and self.current_yaml_path:
@@ -309,7 +337,7 @@ class MainWindow(QMainWindow):
                     if isinstance(data, dict) and "game" in data:
                         base_game = str(data["game"])
                         yaml_base_folder = os.path.join(get_exe_folder(), "YAMLS")
-                        base_yaml_path = os.path.join(yaml_base_folder, f"{base_game}.yaml")
+                        base_yaml_path = os.path.join(yaml_base_folder, f"{base_game}_Template.yaml")
 
                         print("[INFO] Selected Slot YAML:", selected_yaml_path)
                         if config.debug_flag:
@@ -319,15 +347,18 @@ class MainWindow(QMainWindow):
                             # WeightedSettingsEnabled toggle
                             load_yaml_UI(self, base_yaml_path, selected_yaml_path, base_game)
                             filter_rows(self, self.ui.SearchField.text())
+                            name = self.ui.YAMLLineEdit.text()
+                            game = self.ui.GameLineEdit.text()
+                            self.ui.SaveYamlButton.setText(f"Save YAML as '{name}-{game}.yaml'")
                         else:
-                            print(f"[ERROR] Base YAML for game '{base_game}' not found: {base_yaml_path}")
+                            print(f"[mainwindow] [ERROR] Base YAML for game '{base_game}' not found: {base_yaml_path}")
 
                         from os.path import basename
                         yaml_name = basename(selected_yaml_path)
                         weighted_enabled = get_yaml_setting(yaml_name, "Enter Weighted Option Mode", False)
                         self.ui.WeightedSettingsEnabled.setChecked(weighted_enabled)
                     else:
-                        print(f"[ERROR] 'game' field missing in selected YAML: {selected_yaml_path}")
+                        print(f"[mainwindow] [ERROR] 'game' field missing in selected YAML: {selected_yaml_path}")
             else:
                 print("[WARNING] No YAML file currently selected.")
 

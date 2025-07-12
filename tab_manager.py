@@ -202,14 +202,14 @@ def apply_type_setting(tab_ui, game_name, tab_key, type_value, exclude_model, se
             all_items = get_extracted_data(game_name, "item_names")
             exclude_model.setStringList(sorted(all_items))
         except Exception as e:
-            print(f"[ERROR] Failed to load item names for {game_name}: {e}")
+            print(f"[tab_manager] [ERROR] Failed to load item names for {game_name}: {e}")
 
     elif type_value == "Location":
         try:
             all_locations = get_extracted_data(game_name, "location_names")
             exclude_model.setStringList(sorted(all_locations))
         except Exception as e:
-            print(f"[ERROR] Failed to load location names for {game_name}: {e}")
+            print(f"[tab_manager] [ERROR] Failed to load location names for {game_name}: {e}")
 
     apply_yaml_items(tab_ui, selected_game_path, tab_key, exclude_model)
 
@@ -359,7 +359,7 @@ def populate_filter_boxes(tab_ui, game_name, type_value):
                 filter_exclude.addItem(name)
 
         except Exception as e:
-            print(f"[ERROR] Failed to load item groups for {game_name}: {e}")
+            print(f"[tab_manager] [ERROR] Failed to load item groups for {game_name}: {e}")
 
     elif type_value == "Location":
         try:
@@ -378,7 +378,7 @@ def populate_filter_boxes(tab_ui, game_name, type_value):
                 filter_exclude.addItem(name)
 
         except Exception as e:
-            print(f"[ERROR] Failed to load location groups for {game_name}: {e}")
+            print(f"[tab_manager] [ERROR] Failed to load location groups for {game_name}: {e}")
 
 def update_type_visibility(tab_ui, key, type_value, items, locations):
     # Determine if Type and TypeText should be shown (based on tab name)

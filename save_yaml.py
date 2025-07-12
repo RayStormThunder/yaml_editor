@@ -30,16 +30,17 @@ def save_yaml(main_window):
         return  # Done
     else:
         selected_game = main_window.ui.GameLineEdit.text()
-        base_yaml_path = os.path.join(get_exe_folder(), "YAMLS", f"{selected_game}.yaml")
+        base_yaml_path = os.path.join(get_exe_folder(), "YAMLS", f"{selected_game}_Template.yaml")
 
         if not os.path.exists(base_yaml_path):
-            print(f"[ERROR] Base YAML not found: {base_yaml_path}")
+            print(f"[save_yaml] [ERROR] Base YAML not found: {base_yaml_path}")
             return
 
         base_yaml = load_yaml_file(base_yaml_path)
 
         # Step 2: Get NameLineEdit and GameLineEdit values
         name_value = main_window.ui.NameLineEdit.text()
+        yaml_name_value = main_window.ui.YAMLLineEdit.text()
         game_value = main_window.ui.GameLineEdit.text()
 
         # Step 3: Create new YAML data (starting from base_yaml)
@@ -83,14 +84,14 @@ def save_yaml(main_window):
         output_dir = os.path.join(get_exe_folder(), "YAMLS", game_value)
         os.makedirs(output_dir, exist_ok=True)  # Create directory if missing
 
-        output_path = os.path.join(output_dir, f"{name_value}-{game_value}.yaml")
+        output_path = os.path.join(output_dir, f"{yaml_name_value}-{game_value}.yaml")
         with open(output_path, "w", encoding="utf-8") as f:
             yaml.dump(new_yaml, f, sort_keys=False, allow_unicode=True)
 
         yaml_key = f"{name_value}-{game_value}.yaml"
         set_yaml_setting(yaml_key, "Enter Weighted Option Mode", weighted_enabled)
 
-        print(f"[INFO] Saved YAML to: {output_path}")
+        print(f"[save_yaml] [INFO] Saved YAML to: {output_path}")
 
 def set_normal_values(main_window, new_yaml, game_value):
     for i in range(main_window.ui.ScrollMain.widget().layout().count()):

@@ -12,7 +12,7 @@ def load_yaml_file(yaml_path):
         with open(yaml_path, 'r', encoding='utf-8') as f:
             return yaml.safe_load(f)
     else:
-        print(f"[WARNING] No YAML found at '{yaml_path}'.")
+        print(f"[load_yaml_data] [WARNING] No YAML found at '{yaml_path}'.")
         return {}
 
 def extract_comments(yaml_path, selected_game_name):
@@ -50,7 +50,7 @@ def prepare_row_data(base_yaml_path, selected_game_path, selected_game_name):
     selected_game_values = selected_yaml_data.get(selected_game_name, {})
 
     if not base_game_data:
-        print(f"[ERROR] Game '{selected_game_name}' not found in base YAML.")
+        print(f"[load_yaml_data] [ERROR] Game '{selected_game_name}' not found in base YAML.")
         return None, []
 
     comments = extract_comments(base_yaml_path, selected_game_name)
@@ -124,7 +124,19 @@ def load_yaml_UI(main_window, base_yaml_path, selected_game_path, selected_game_
                 main_window.ui.DescriptionLineEdit.setText(description)
             elif field == "game":
                 main_window.ui.GameLineEdit.setText(str(selected_yaml_data[field]))
-                
+
+    # Set YAMLLineEdit based on file name prefix or "name" field
+    yaml_filename = os.path.basename(selected_game_path)
+    suffix = f"-{selected_game_name}.yaml"
+    if yaml_filename.endswith(suffix):
+        yaml_prefix = yaml_filename[:-len(suffix)]
+        main_window.ui.YAMLLineEdit.setText(yaml_prefix)
+    else:
+        # Fallback: use the 'name' field from the YAML
+        name_value = selected_yaml_data.get("name", "")
+        main_window.ui.YAMLLineEdit.setText(str(name_value))
+ 
+
     base_yaml_data = load_yaml_file(base_yaml_path)
     game_data = base_yaml_data.get(selected_game_name, {})
 
@@ -144,9 +156,9 @@ def load_yaml_UI(main_window, base_yaml_path, selected_game_path, selected_game_
             continue  # Skip rows that were added as tabs
 
         if config.debug_flag:
-            print(f"{row['name']} Value Is:")
-            print(f"[base_yaml_path]: {row['base_yaml_selected']}")
-            print(f"[selected_path]: {row['selected_yaml_selected']}")
+            print(f"[load_yaml_data] {row['name']} Value Is:")
+            print(f"[load_yaml_data] [base_yaml_path]: {row['base_yaml_selected']}")
+            print(f"[load_yaml_data] [selected_path]: {row['selected_yaml_selected']}")
             print()
 
         add_both_rows(
@@ -156,5 +168,4 @@ def load_yaml_UI(main_window, base_yaml_path, selected_game_path, selected_game_
             description=row["description"],
             starting_item=row["selected_yaml_selected"]
         )
-
 

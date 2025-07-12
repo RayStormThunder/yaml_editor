@@ -31,7 +31,21 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <layout class="QHBoxLayout" name="TopBar" stretch="2,2,4,1">
+        <layout class="QHBoxLayout" name="TopBar" stretch="5,4,4,8">
+         <item>
+          <layout class="QHBoxLayout" name="YAMLGroup">
+           <item>
+            <widget class="QLabel" name="YAMLName">
+             <property name="text">
+              <string>YAML Prefix Name:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="YAMLLineEdit"/>
+           </item>
+          </layout>
+         </item>
          <item>
           <layout class="QHBoxLayout" name="NameGroup">
            <item>
@@ -61,7 +75,7 @@
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="DescriptionGroup">
+          <layout class="QHBoxLayout" name="DescriptionGroup" stretch="0,2">
            <item>
             <widget class="QLabel" name="DescriptionLabel">
              <property name="text">
@@ -73,13 +87,6 @@
             <widget class="QLineEdit" name="DescriptionLineEdit"/>
            </item>
           </layout>
-         </item>
-         <item>
-          <widget class="QLabel" name="PatcherVersion">
-           <property name="text">
-            <string>Archipelago Version: 0.6.1</string>
-           </property>
-          </widget>
          </item>
         </layout>
        </item>
