@@ -3,6 +3,7 @@ import json
 import config
 import requests
 import time
+from path_fixer import sanitize_path_component
 from datetime import datetime
 from paths import get_exe_folder  # You already use this
 
@@ -31,7 +32,7 @@ def extract_datapackages():
 
             games = data.get("games", {})
             for game_name, game_data in games.items():
-                game_output_folder = os.path.join(output_folder, game_name)
+                game_output_folder = os.path.join(output_folder, sanitize_path_component(game_name))
                 os.makedirs(game_output_folder, exist_ok=True)
 
                 item_groups = game_data.get("item_name_groups", {})
@@ -75,12 +76,12 @@ def get_extracted_data(game, data_type, group=None):
         if not os.path.isdir(folder_path):
             continue
 
-        if folder == game:
+        if folder == sanitize_path_component(game):
             exact_match = folder
             break
-        elif folder in game:
+        elif folder in sanitize_path_component(game):
             partial_match_folder_in_game = folder
-        elif game in folder:
+        elif sanitize_path_component(game) in folder:
             partial_match_game_in_folder = folder
 
     # Prioritize matches

@@ -8,6 +8,7 @@ import random
 import typing
 import config
 from paths import get_exe_folder
+from path_fixer import sanitize_path_component
 from datapackage_conversion import extract_datapackages
 from json import JSONEncoder
 
@@ -160,7 +161,8 @@ def save_datapackage(packet, game_name, item_groups=None, location_groups=None):
 
     # Build file path using game name
     safe_game_name = game_name.replace(" ", "_")
-    output_path = os.path.join(output_dir, f"datapackage_{safe_game_name}.json")
+    super_safe_game_name = sanitize_path_component(safe_game_name)
+    output_path = os.path.join(output_dir, f"datapackage_{super_safe_game_name}.json")
 
     # Extract the datapackage structure
     data_package = packet.get("data", {})

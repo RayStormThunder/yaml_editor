@@ -20,6 +20,7 @@ from game_and_slot_setup import refresh_games_and_slots
 from stored_gui import set_yaml_setting, get_yaml_setting, set_global_setting, get_global_setting
 from paths import get_base_folder, get_exe_folder
 from datapackage_conversion import extract_datapackages, update_datapackage
+from path_fixer import sanitize_path_component
 
 config.debug_flag = False  # Enable debug logging globally
 
@@ -268,7 +269,8 @@ class MainWindow(QMainWindow):
             if has_rows:
                 name = self.ui.YAMLLineEdit.text()
                 game = self.ui.GameLineEdit.text()
-                self.ui.SaveYamlButton.setText(f"Save YAML as '{name}-{game}.yaml'")
+                clean_game = sanitize_path_component(game)
+                self.ui.SaveYamlButton.setText(f"Save YAML as '{name}-{clean_game}.yaml'")
 
         def on_save_yaml_clicked(self):
                 from save_yaml import save_yaml
@@ -334,8 +336,9 @@ class MainWindow(QMainWindow):
                     data = yaml.safe_load(f)
                     if isinstance(data, dict) and "game" in data:
                         base_game = str(data["game"])
+                        clean_base_game = sanitize_path_component(base_game)
                         yaml_base_folder = os.path.join(get_exe_folder(), "YAMLS")
-                        base_yaml_path = os.path.join(yaml_base_folder, f"{base_game}_Template.yaml")
+                        base_yaml_path = os.path.join(yaml_base_folder, f"{clean_base_game}_Template.yaml")
 
                         print("[INFO] Selected Slot YAML:", selected_yaml_path)
                         if config.debug_flag:
@@ -350,7 +353,8 @@ class MainWindow(QMainWindow):
                             filter_rows(self, self.ui.SearchField.text())
                             name = self.ui.YAMLLineEdit.text()
                             game = self.ui.GameLineEdit.text()
-                            self.ui.SaveYamlButton.setText(f"Save YAML as '{name}-{game}.yaml'")
+                            clean_game = sanitize_path_component(game)
+                            self.ui.SaveYamlButton.setText(f"Save YAML as '{name}-{clean_game}.yaml'")
                         else:
                             print(f"[mainwindow] [ERROR] Base YAML for game '{base_game}' not found: {base_yaml_path}")
 

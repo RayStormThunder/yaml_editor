@@ -5,6 +5,7 @@ from collections import Counter
 from paths import get_exe_folder
 from load_yaml_data import load_yaml_file
 from stored_gui import set_yaml_setting
+from path_fixer import sanitize_path_component
 
 def convert_to_yaml_format(data):
     """Converts Python data to a formatted YAML string."""
@@ -30,7 +31,8 @@ def save_yaml(main_window):
         return  # Done
     else:
         selected_game = main_window.ui.GameLineEdit.text()
-        base_yaml_path = os.path.join(get_exe_folder(), "YAMLS", f"{selected_game}_Template.yaml")
+        clean_selected_game = sanitize_path_component(selected_game)
+        base_yaml_path = os.path.join(get_exe_folder(), "YAMLS", f"{clean_selected_game}_Template.yaml")
 
         if not os.path.exists(base_yaml_path):
             print(f"[save_yaml] [ERROR] Base YAML not found: {base_yaml_path}")
@@ -81,14 +83,16 @@ def save_yaml(main_window):
                 counted = dict(Counter(values))
                 set_game_option(new_yaml, game_value, tab_name, counted)
 
-        output_dir = os.path.join(get_exe_folder(), "YAMLS", game_value)
+        clean_game_value = sanitize_path_component(game_value)
+
+        output_dir = os.path.join(get_exe_folder(), "YAMLS", clean_game_value)
         os.makedirs(output_dir, exist_ok=True)  # Create directory if missing
 
-        output_path = os.path.join(output_dir, f"{yaml_name_value}-{game_value}.yaml")
+        output_path = os.path.join(output_dir, f"{yaml_name_value}-{clean_game_value}.yaml")
         with open(output_path, "w", encoding="utf-8") as f:
             yaml.dump(new_yaml, f, sort_keys=False, allow_unicode=True)
 
-        yaml_key = f"{name_value}-{game_value}.yaml"
+        yaml_key = f"{name_value}-{clean_game_value}.yaml"
         set_yaml_setting(yaml_key, "Enter Weighted Option Mode", weighted_enabled)
 
         print(f"[save_yaml] [INFO] Saved YAML to: {output_path}")

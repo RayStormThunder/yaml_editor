@@ -4,6 +4,7 @@ import yaml
 import re
 import shutil
 import config  # To access debug_flag
+from path_fixer import sanitize_path_component
 from PySide6.QtWidgets import QRadioButton, QVBoxLayout, QButtonGroup
 from spacer_utils import move_spacer
 
@@ -16,6 +17,7 @@ def move_yaml_files(main_window, yaml_base_folder):
                     data = yaml.safe_load(f)
                 if isinstance(data, dict) and "game" in data:
                     game_name = str(data["game"])
+                    game_name = sanitize_path_component(game_name)
                     game_folder = os.path.join(yaml_base_folder, game_name)
                     os.makedirs(game_folder, exist_ok=True)
                     main_window.moved_yaml_mapping[file] = game_name
@@ -165,14 +167,14 @@ def refresh_games_and_slots(main_window, prev_game, prev_slot, override):
             refresh_slots(main_window, selected_game, prev_slot)
 
         selected_slot = get_selected_button(main_window.slot_group) if hasattr(main_window, 'slot_group') else None
-        main_window.current_yaml_path = os.path.join(yaml_base_folder, selected_game, selected_slot) if selected_game and selected_slot else None
+        main_window.current_yaml_path = os.path.join(yaml_base_folder, sanitize_path_component(selected_game), selected_slot) if selected_game and selected_slot else None
 
         return selected_game, selected_slot
     else:
         return prev_game, prev_slot
 
 def refresh_slots(main_window, selected_game, prev_slot):
-    yaml_folder = os.path.join(get_exe_folder(), "YAMLS", selected_game)
+    yaml_folder = os.path.join(get_exe_folder(), "YAMLS", sanitize_path_component(selected_game))
     scroll_slot_widget = main_window.ui.ScrollSlot.widget()
     slot_layout = scroll_slot_widget.layout()
 
