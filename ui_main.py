@@ -157,7 +157,7 @@ class Ui_MainWindow(object):
         self.ScrollMain.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 614, 486))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 49, 486))
         self.verticalLayout_5 = QVBoxLayout(self.scrollAreaWidgetContents_3)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.Spacer = QSpacerItem(20, 495, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
@@ -170,10 +170,11 @@ class Ui_MainWindow(object):
 
         self.DescriptionText = QTextEdit(self.General)
         self.DescriptionText.setObjectName(u"DescriptionText")
+        self.DescriptionText.setReadOnly(True)
+        self.DescriptionText.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
 
         self.MainLayout.addWidget(self.DescriptionText)
 
-        self.MainLayout.setStretch(0, 2)
         self.MainLayout.setStretch(1, 1)
 
         self.verticalLayout_4.addLayout(self.MainLayout)
@@ -301,7 +302,58 @@ class Ui_MainWindow(object):
         self.SearchLabel.setText(QCoreApplication.translate("MainWindow", u"Search:", None))
         self.WeightedSettingsEnabled.setText(QCoreApplication.translate("MainWindow", u"Enter Weighted Option Mode", None))
         self.HideDescriptionTextEnabled.setText(QCoreApplication.translate("MainWindow", u"Hide Setting Description", None))
-        self.DescriptionText.setMarkdown("")
+        self.DescriptionText.setMarkdown(QCoreApplication.translate("MainWindow", u"Getting Started:\n"
+"\n"
+"**_Loading a YAML:**_\n"
+"\n"
+"To properly edit a game's yaml. Start by adding a template yaml of that game\n"
+"into the 'YAMLS' folder. Upon doing this, a folder with that game's name should\n"
+"appear. You can either place a previously edited yaml into that folder, or you\n"
+"can load the base yaml that is already in there. You can select your game on\n"
+"the right, followed by the yaml you want.\n"
+"\n"
+"**_Saving a YAML:**_\n"
+"\n"
+"Once you have changed your yaml to your liking. You can hit the save button at\n"
+"the bottom. The file will saved into it's game folder inside 'YAMLS.' The file\n"
+"name will be {YAML Prefix Name}-{Game Name}.yaml. If you already have a file\n"
+"with that name it will be overwritten. So change the 'YAML Prefix Name' if you\n"
+"don't want to overwrite your file.\n"
+"\n"
+"**_Adding items to list tabs:**_\n"
+"\n"
+"On the non-general tabs, you may have some lists that are missing data. By\n"
+"typing information into the 'add/remove' field in the bottom mi"
+                        "ddle, you can\n"
+"add (or remove) that item from the list. Once an item is added to the list, it\n"
+"will always be there across any yaml for that game. This can be useful for\n"
+"lists that aren't associated with items or locations. Or if you don't have a\n"
+"datapackage.\n"
+"\n"
+"**_What does a datapackage do:**_\n"
+"\n"
+"If your game has a datapackage, it will automatically fill the lists in\n"
+"non-general tabs with the items and locations associated with your game. It\n"
+"also allows for the filtering dropdowns to have useful things to filter. If you\n"
+"do not have a datapackage, all lists will be empty by default and you will not\n"
+"be able to filter anything. \n"
+"\n"
+"**_Obtaining a datapackage:**_\n"
+"\n"
+"This program will automatically update the supported game datapackage if you\n"
+"are connected to the internet. If you want to get the datapackage of an\n"
+"unsupported game because  your game does not have a datapackage, or if new\n"
+"items or locations have been added. You can create a multiworl"
+                        "d with that game.\n"
+"Then have this yaml editor connect to that multiworld and it will extract the\n"
+"datapackage. This is done by not having a yaml loaded and filling out the\n"
+"fields at the top (not including 'YAML Prefix Name') and then pressing the\n"
+"'Extract Datapackage with Server Connection' button at the bottom. Keep in mind\n"
+"that some of the fields are case sensitive. So make sure you have it correct.\n"
+"\n"
+"    \n"
+"\n"
+"", None))
         self.DescriptionText.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -309,7 +361,28 @@ class Ui_MainWindow(object):
 "li.unchecked::marker { content: \"\\2610\"; }\n"
 "li.checked::marker { content: \"\\2612\"; }\n"
 "</style></head><body style=\" font-family:'Segoe UI'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", None))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt;\">Getting Started:</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700; text-deco"
+                        "ration: underline;\">Loading a YAML:</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">To properly edit a game's yaml. Start by adding a template yaml of that game into the 'YAMLS' folder. Upon doing this, a folder with that game's name should appear. You can either place a previously edited yaml into that folder, or you can load the base yaml that is already in there. You can select your game on the right, followed by the yaml you want.</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700; text-decoration: underline;\">Saving a YAML:</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0"
+                        "px;\">Once you have changed your yaml to your liking. You can hit the save button at the bottom. The file will saved into it's game folder inside 'YAMLS.' The file name will be {YAML Prefix Name}-{Game Name}.yaml. If you already have a file with that name it will be overwritten. So change the 'YAML Prefix Name' if you don't want to overwrite your file.</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700; text-decoration: underline;\">Adding items to list tabs:</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">On the non-general tabs, you may have some lists that are missing data. By typing information into the 'add/remove' field in the bottom middle, you can add"
+                        " (or remove) that item from the list. Once an item is added to the list, it will always be there across any yaml for that game. This can be useful for lists that aren't associated with items or locations. Or if you don't have a datapackage.</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700; text-decoration: underline;\">What does a datapackage do:</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">If your game has a datapackage, it will automatically fill the lists in non-general tabs with the items and locations associated with your game. It also allows for the filtering dropdowns to have useful things to filter. If you do not have a datapackage, all lists wil"
+                        "l be empty by default and you will not be able to filter anything. </p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700; text-decoration: underline;\">Obtaining a datapackage:</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">This program will automatically update the supported game datapackage if you are connected to the internet. If you want to get the datapackage of an unsupported game because  your game does not have a datapackage, or if new items or locations have been added. You can create a multiworld with that game. Then have this yaml editor connect to that multiworld and it will extract the datapackage. This is done by not having a yaml loaded and fill"
+                        "ing out the fields at the top (not including 'YAML Prefix Name') and then pressing the 'Extract Datapackage with Server Connection' button at the bottom. Keep in mind that some of the fields are case sensitive. So make sure you have it correct.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">    </span></p></body></html>", None))
         self.MainTabs.setTabText(self.MainTabs.indexOf(self.General), QCoreApplication.translate("MainWindow", u"General", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Game", None))
         self.SlotSelect_2.setText(QCoreApplication.translate("MainWindow", u"YAML", None))

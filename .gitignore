@@ -59,7 +59,7 @@ CMakeLists.txt.user*
 *.bat
 gui_data.json
 
-/Extracted_Datapackages/
+/Datapackages
 /YAMLS/
 /GUI/
 
@@ -67,7 +67,6 @@ gui_data.json
 /dist/
 /build/
 /__pycache__/
-/Datapackages/Extracted_Datapackages/
 
 # ----------------------------------------------------------------------------
 # Visual Studio generated files

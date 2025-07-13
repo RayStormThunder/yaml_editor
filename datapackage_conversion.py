@@ -1,6 +1,9 @@
 import os
 import json
 import config
+import requests
+import time
+from datetime import datetime
 from paths import get_exe_folder  # You already use this
 
 def extract_datapackages():
@@ -23,7 +26,7 @@ def extract_datapackages():
             try:
                 data = json.load(f)
             except json.JSONDecodeError:
-                print(f"[datapackage_conversion] ERROR] Invalid JSON in {file_name}, skipping...")
+                print(f"[datapackage_conversion] [ERROR] Invalid JSON in {file_name}, skipping...")
                 continue
 
             games = data.get("games", {})
@@ -49,7 +52,7 @@ def extract_datapackages():
                     json.dump(location_names, out_f, indent=2, ensure_ascii=False)
 
                 if config.debug_flag:
-                    print(f"[datapackage_conversion] INFO] Extracted data for game '{game_name}' from '{file_name}'.")
+                    print(f"[datapackage_conversion] [INFO] Extracted data for game '{game_name}' from '{file_name}'.")
 
 def get_extracted_data(game, data_type, group=None):
     base_folder = os.path.join(get_exe_folder(), "Datapackages", "Extracted_Datapackages")
@@ -105,3 +108,59 @@ def get_extracted_data(game, data_type, group=None):
             return list(data.keys())
     else:
         return data
+
+def update_datapackage():
+    if config.debug_flag:
+        print("[datapackage_conversion] [DEBUG] Starting datapackage update")
+
+    base_folder = os.path.join(get_exe_folder(), "Datapackages")
+    if config.debug_flag:
+        print(f"[datapackage_conversion] [DEBUG] Base folder: {base_folder}")
+    os.makedirs(base_folder, exist_ok=True)
+
+    save_path = os.path.join(base_folder, "datapackage.json")
+    version_path = os.path.join(base_folder, "datapackage_version.txt")
+    github_url = "https://api.github.com/repos/ArchipelagoMW/Archipelago/releases/latest"
+    package_url = "https://archipelago.gg/datapackage"
+
+    try:
+        if config.debug_flag:
+            print("[datapackage_conversion] [DEBUG] Sending request to GitHub...")
+        resp = requests.get(github_url)
+        if config.debug_flag:
+            print(f"[datapackage_conversion] [DEBUG] GitHub response status: {resp.status_code}")
+
+        if resp.status_code != 200:
+            print(f"[datapackage_conversion] [ERROR] Failed to check latest Archipelago version: {resp.status_code}")
+            return
+
+        latest_tag = resp.json().get("tag_name", "").strip()
+        if config.debug_flag:
+            print(f"[datapackage_conversion] [DEBUG] Latest tag: {latest_tag}")
+
+        current_tag = ""
+        if os.path.exists(version_path):
+            with open(version_path, "r", encoding="utf-8") as f:
+                current_tag = f.read().strip()
+        if config.debug_flag:
+            print(f"[datapackage_conversion] [DEBUG] Current local tag: {current_tag}")
+
+        if latest_tag == current_tag:
+            print(f"[datapackage_conversion] [INFO] Datapackage is up to date with tag: {latest_tag}")
+            return
+
+        if config.debug_flag:
+            print(f"[datapackage_conversion] [INFO] New version available: {latest_tag}")
+
+        response = requests.get(package_url)
+        if response.status_code == 200:
+            with open(save_path, "wb") as f:
+                f.write(response.content)
+            with open(version_path, "w", encoding="utf-8") as f:
+                f.write(latest_tag)
+            print(f"[datapackage_conversion] [INFO] Datapackage updated to version: {latest_tag}")
+        else:
+            print(f"[datapackage_conversion] [ERROR] Failed to download datapackage: {response.status_code}")
+
+    except Exception as e:
+        print(f"[datapackage_conversion] [ERROR] Exception occurred: {e}")

@@ -19,7 +19,7 @@ from description import set_description_text, show_description_text
 from game_and_slot_setup import refresh_games_and_slots
 from stored_gui import set_yaml_setting, get_yaml_setting, set_global_setting, get_global_setting
 from paths import get_base_folder, get_exe_folder
-from datapackage_conversion import extract_datapackages
+from datapackage_conversion import extract_datapackages, update_datapackage
 
 config.debug_flag = False  # Enable debug logging globally
 
@@ -155,25 +155,21 @@ def apply_dark_theme(app):
                 }
         """)
 
-
-def extract_datapackages_and_create_yaml_folder():
+def create_datapackages_and_yaml_folders():
         exe_folder = get_exe_folder()
-        base_folder = get_base_folder()
 
-        # Extract Datapackages folder
-        source_path = os.path.join(base_folder, "Datapackages")
-        dest_path = os.path.join(exe_folder, "Datapackages")
-
-        if not os.path.exists(dest_path):
+        # Create Datapackages folder
+        datapackages_path = os.path.join(exe_folder, "Datapackages")
+        if not os.path.exists(datapackages_path):
                 try:
-                        shutil.copytree(source_path, dest_path)
-                        print(f"[mainwindow] [INFO] Extracted Datapackages to {dest_path}")
+                        os.makedirs(datapackages_path)
+                        print(f"[mainwindow] [INFO] Created Datapackages folder at {datapackages_path}")
                 except Exception as e:
-                        print(f"[mainwindow] [ERROR] Failed to extract Datapackages: {e}")
+                        print(f"[mainwindow] [ERROR] Failed to create Datapackages folder: {e}")
         else:
-                print(f"[mainwindow] [INFO] Datapackages already exists at {dest_path}")
+                print(f"[mainwindow] [INFO] Datapackages folder already exists at {datapackages_path}")
 
-        # Create YAMLS folder if it doesn't exist
+        # Create YAMLS folder
         yamls_path = os.path.join(exe_folder, "YAMLS")
         if not os.path.exists(yamls_path):
                 try:
@@ -246,6 +242,8 @@ class MainWindow(QMainWindow):
                 self.ui.DescriptionText.setVisible(not hide_enabled)
                 self.ui.HideDescriptionTextEnabled.stateChanged.connect(self.on_hide_description_toggle)
                 self.ui.SaveYamlButton.clicked.connect(self.on_save_yaml_clicked)
+
+                update_datapackage()
 
                 # Connect signals to update SaveYamlButton text
                 self.ui.YAMLLineEdit.textChanged.connect(self.update_save_yaml_button_text)
@@ -345,6 +343,9 @@ class MainWindow(QMainWindow):
 
                         if os.path.exists(base_yaml_path):
                             # WeightedSettingsEnabled toggle
+                            self.ui.MainLayout.setStretch(0, 2)
+                            self.ui.MainLayout.setStretch(1, 1)
+
                             load_yaml_UI(self, base_yaml_path, selected_yaml_path, base_game)
                             filter_rows(self, self.ui.SearchField.text())
                             name = self.ui.YAMLLineEdit.text()
@@ -376,7 +377,7 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     if getattr(sys, 'frozen', False):
-            extract_datapackages_and_create_yaml_folder()
+        create_datapackages_and_yaml_folders
     extract_datapackages()
     app = QApplication([])
     if not is_windows_11() or not is_dark_mode():

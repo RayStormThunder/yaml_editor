@@ -33,11 +33,11 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install pyinstaller pyyaml PySide6 websockets
+          pip install pyinstaller pyyaml PySide6 websockets requests
 
       - name: Build Executable
         run: |
-          pyinstaller --name "YAML_Editor" --onefile --collect-submodules PySide6 --hidden-import=yaml --hidden-import=websockets --add-data "Datapackages;Datapackages" mainwindow.py
+          pyinstaller --name "YAML_Editor" --onefile --collect-submodules PySide6 --hidden-import=yaml --hidden-import=websockets mainwindow.py
 
       - name: Move Build into yaml_editor Folder
         run: |

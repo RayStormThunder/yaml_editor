@@ -4,6 +4,7 @@ from ui_added_removed_lists import Ui_Form
 from stored_gui import set_game_setting, get_game_setting
 from datapackage_conversion import get_extracted_data
 import yaml
+import config
 
 def clear_tabs(main_window):
     """Removes all tabs from MainTabs except the 'General' tab."""
@@ -158,6 +159,8 @@ def add_tabs_for_game(main_window, game_data, selected_game_path, game_name):
             """)
             main_window.ui.MainTabs.addTab(tab, key)
             tabbed_keys.add(key)
+            if config.debug_flag:
+                print(f"[tab_manager] Key is: {key}")
 
     return tabbed_keys
 

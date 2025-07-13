@@ -36,6 +36,9 @@ def add_normal_row(main_window, name: str, items: dict, description: str = "", s
     row_widget.row_type = "normal"
     row_ui = Ui_BasicRow()
     row_ui.setupUi(row_widget)
+    if config.debug_flag:
+        print(f"[add_rows] [normal] base_items: {items}")
+        print(f"[add_rows] [normal] starting_item: {starting_item}")
 
     row_ui.SettingLabel.setText(name)
 
@@ -157,7 +160,9 @@ def add_weighted_row(main_window, name: str, items: dict, description: str = "",
     row_ui = Ui_WeightedRow()
     row_ui.setupUi(row_widget)
     if config.debug_flag:
-        print(items)
+        print(f"[add_rows] [weighted] base_items: {items}")
+        print(f"[add_rows] [weighted] starting_item: {starting_item}")
+        print()
 
     row_ui.Name.setText(name)
 

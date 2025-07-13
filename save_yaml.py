@@ -20,7 +20,7 @@ def save_yaml(main_window):
             break
 
     if not has_rows:
-        # No YAML loaded — Fetch DataPackage instead
+        # No YAML loaded  Fetch DataPackage instead
         name = main_window.ui.NameLineEdit.text()
         game = main_window.ui.GameLineEdit.text()
         port = main_window.ui.DescriptionLineEdit.text()

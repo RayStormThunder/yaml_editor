@@ -131,7 +131,7 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="MainLayout" stretch="2,1">
+           <layout class="QHBoxLayout" name="MainLayout" stretch="0,1">
             <item>
              <widget class="QScrollArea" name="ScrollMain">
               <property name="sizePolicy">
@@ -151,7 +151,7 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>614</width>
+                 <width>49</width>
                  <height>486</height>
                 </rect>
                </property>
@@ -175,8 +175,60 @@
             </item>
             <item>
              <widget class="QTextEdit" name="DescriptionText">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
               <property name="markdown">
-               <string/>
+               <string>Getting Started:
+
+**_Loading a YAML:**_
+
+To properly edit a game's yaml. Start by adding a template yaml of that game
+into the 'YAMLS' folder. Upon doing this, a folder with that game's name should
+appear. You can either place a previously edited yaml into that folder, or you
+can load the base yaml that is already in there. You can select your game on
+the right, followed by the yaml you want.
+
+**_Saving a YAML:**_
+
+Once you have changed your yaml to your liking. You can hit the save button at
+the bottom. The file will saved into it's game folder inside 'YAMLS.' The file
+name will be {YAML Prefix Name}-{Game Name}.yaml. If you already have a file
+with that name it will be overwritten. So change the 'YAML Prefix Name' if you
+don't want to overwrite your file.
+
+**_Adding items to list tabs:**_
+
+On the non-general tabs, you may have some lists that are missing data. By
+typing information into the 'add/remove' field in the bottom middle, you can
+add (or remove) that item from the list. Once an item is added to the list, it
+will always be there across any yaml for that game. This can be useful for
+lists that aren't associated with items or locations. Or if you don't have a
+datapackage.
+
+**_What does a datapackage do:**_
+
+If your game has a datapackage, it will automatically fill the lists in
+non-general tabs with the items and locations associated with your game. It
+also allows for the filtering dropdowns to have useful things to filter. If you
+do not have a datapackage, all lists will be empty by default and you will not
+be able to filter anything. 
+
+**_Obtaining a datapackage:**_
+
+This program will automatically update the supported game datapackage if you
+are connected to the internet. If you want to get the datapackage of an
+unsupported game because  your game does not have a datapackage, or if new
+items or locations have been added. You can create a multiworld with that game.
+Then have this yaml editor connect to that multiworld and it will extract the
+datapackage. This is done by not having a yaml loaded and filling out the
+fields at the top (not including 'YAML Prefix Name') and then pressing the
+'Extract Datapackage with Server Connection' button at the bottom. Keep in mind
+that some of the fields are case sensitive. So make sure you have it correct.
+
+    
+
+</string>
               </property>
               <property name="html">
                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -186,7 +238,26 @@ hr { height: 1px; border-width: 0; }
 li.unchecked::marker { content: &quot;\2610&quot;; }
 li.checked::marker { content: &quot;\2612&quot;; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Segoe UI'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Getting Started:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;Loading a YAML:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;To properly edit a game's yaml. Start by adding a template yaml of that game into the 'YAMLS' folder. Upon doing this, a folder with that game's name should appear. You can either place a previously edited yaml into that folder, or you can load the base yaml that is already in there. You can select your game on the right, followed by the yaml you want.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;Saving a YAML:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Once you have changed your yaml to your liking. You can hit the save button at the bottom. The file will saved into it's game folder inside 'YAMLS.' The file name will be {YAML Prefix Name}-{Game Name}.yaml. If you already have a file with that name it will be overwritten. So change the 'YAML Prefix Name' if you don't want to overwrite your file.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;Adding items to list tabs:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;On the non-general tabs, you may have some lists that are missing data. By typing information into the 'add/remove' field in the bottom middle, you can add (or remove) that item from the list. Once an item is added to the list, it will always be there across any yaml for that game. This can be useful for lists that aren't associated with items or locations. Or if you don't have a datapackage.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;What does a datapackage do:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If your game has a datapackage, it will automatically fill the lists in non-general tabs with the items and locations associated with your game. It also allows for the filtering dropdowns to have useful things to filter. If you do not have a datapackage, all lists will be empty by default and you will not be able to filter anything. &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;Obtaining a datapackage:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This program will automatically update the supported game datapackage if you are connected to the internet. If you want to get the datapackage of an unsupported game because  your game does not have a datapackage, or if new items or locations have been added. You can create a multiworld with that game. Then have this yaml editor connect to that multiworld and it will extract the datapackage. This is done by not having a yaml loaded and filling out the fields at the top (not including 'YAML Prefix Name') and then pressing the 'Extract Datapackage with Server Connection' button at the bottom. Keep in mind that some of the fields are case sensitive. So make sure you have it correct.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;    &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="textInteractionFlags">
+               <set>Qt::TextInteractionFlag::TextSelectableByMouse</set>
               </property>
              </widget>
             </item>
