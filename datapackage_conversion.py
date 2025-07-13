@@ -161,6 +161,7 @@ def update_datapackage():
             print(f"[datapackage_conversion] [INFO] Datapackage updated to version: {latest_tag}")
         else:
             print(f"[datapackage_conversion] [ERROR] Failed to download datapackage: {response.status_code}")
+        extract_datapackages()
 
     except Exception as e:
         print(f"[datapackage_conversion] [ERROR] Exception occurred: {e}")
