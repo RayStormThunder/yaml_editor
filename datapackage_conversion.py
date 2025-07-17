@@ -13,16 +13,31 @@ def extract_datapackages():
     os.makedirs(base_folder, exist_ok=True)
     os.makedirs(output_folder, exist_ok=True)
 
-    # Get list of JSON files, sorted by oldest modified time first
+    # Get list of JSON files
     json_files = [
         os.path.join(base_folder, f)
         for f in os.listdir(base_folder)
         if f.endswith(".json")
     ]
-    json_files.sort(key=lambda f: os.path.getmtime(f))  # Oldest first
+
+    def file_sort_key(filepath):
+        filename = os.path.basename(filepath)
+        first_char = filename[0]
+        if first_char.isdigit():
+            priority = 20 - int(first_char)
+        else:
+            priority = 0
+
+        modified = os.path.getmtime(filepath)
+        return (priority, modified)
+
+    # Sort by priority, then by modified time
+    json_files.sort(key=file_sort_key)
 
     for file_path in json_files:
         file_name = os.path.basename(file_path)
+        if config.debug_flag:
+            print(f"[datapackage_conversion] [DEBUG] Checking: {file_name}")
         with open(file_path, 'r', encoding='utf-8') as f:
             try:
                 data = json.load(f)

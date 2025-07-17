@@ -37,6 +37,7 @@ class Ui_SepecificSetting(object):
 
         self.SpecificSettingNumber = QSpinBox(SepecificSetting)
         self.SpecificSettingNumber.setObjectName(u"SpecificSettingNumber")
+        self.SpecificSettingNumber.setMaximum(9999999)
 
         self.horizontalLayout.addWidget(self.SpecificSettingNumber)
 

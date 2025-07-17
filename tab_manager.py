@@ -66,7 +66,7 @@ def add_tabs_for_game(main_window, game_data, selected_game_path, game_name):
             exclude_model.setStringList(saved_items)
 
             setup_add_remove_button(tab_ui, game_name, key, exclude_model=exclude_model)
-            setup_include_exclude_move_button(tab_ui, tab_type, initial_include=[], exclude_model=exclude_model)
+            setup_include_exclude_move_button(tab_ui, game_name, tab_type, initial_include=[], exclude_model=exclude_model)
 
             type_field = tab_ui.Type
             type_field.clear()
@@ -93,7 +93,7 @@ def add_tabs_for_game(main_window, game_data, selected_game_path, game_name):
                     set_game_setting(game_name, "Tab Types", all_types)
 
                     # Re-apply everything (this will clear & refill lists based on type)
-                    apply_type_setting(tab_ui, game_name, tab_key, value, exclude_model, selected_game_path)
+                    apply_type_setting(tab_ui, tab_type, game_name, tab_key, value, exclude_model, selected_game_path)
 
                     # Refresh filter boxes too (now matching new type)
                     populate_filter_boxes(tab_ui, game_name, value)
@@ -106,7 +106,7 @@ def add_tabs_for_game(main_window, game_data, selected_game_path, game_name):
                 make_type_changed(tab_ui, game_name, key, exclude_model, selected_game_path)
             )
 
-            apply_type_setting(tab_ui, game_name, key, type_field.currentText(), exclude_model, selected_game_path)
+            apply_type_setting(tab_ui, tab_type, game_name, key, type_field.currentText(), exclude_model, selected_game_path)
             populate_filter_boxes(tab_ui, game_name, type_field.currentText())
             update_type_visibility(tab_ui, key, type_field.currentText(), items, locations)
 
@@ -184,7 +184,7 @@ def add_list_item(tab_ui, name: str, target_list: str):
         current_items.append(name)
         model.setStringList(sorted(current_items))
         
-def apply_type_setting(tab_ui, game_name, tab_key, type_value, exclude_model, selected_game_path):
+def apply_type_setting(tab_ui, tab_type, game_name, tab_key, type_value, exclude_model, selected_game_path):
     """Clears lists & applies auto-exclusions for 'Item' and 'Location'."""
     include_model = tab_ui.IncludeList.model()
     if include_model is None:
@@ -214,7 +214,7 @@ def apply_type_setting(tab_ui, game_name, tab_key, type_value, exclude_model, se
         except Exception as e:
             print(f"[tab_manager] [ERROR] Failed to load location names for {game_name}: {e}")
 
-    apply_yaml_items(tab_ui, selected_game_path, tab_key, exclude_model)
+    apply_yaml_items(tab_ui, tab_type, selected_game_path, tab_key, exclude_model)
 
 
 def setup_add_remove_button(tab_ui, game_name, tab_key, exclude_model):
@@ -244,7 +244,7 @@ def setup_add_remove_button(tab_ui, game_name, tab_key, exclude_model):
     tab_ui.AddRemoveButton.clicked.connect(on_add_remove_clicked)
     tab_ui.AddRemoveInput.returnPressed.connect(on_add_remove_clicked)
 
-def setup_include_exclude_move_button(tab_ui, tab_type, initial_include=None, exclude_model=None):
+def setup_include_exclude_move_button(tab_ui, game_name, tab_type, initial_include=None, exclude_model=None):
     initial_include = initial_include or []
     if exclude_model is None:
         exclude_model = QStringListModel()
@@ -268,32 +268,40 @@ def setup_include_exclude_move_button(tab_ui, tab_type, initial_include=None, ex
 
     # Move button logic (now both lists share ExcludeList properly)
     def on_move_clicked():
-        include_items = set(include_model.stringList())
+        include_items = include_model.stringList()
         exclude_items = set(exclude_model.stringList())
 
         selected_include = [index.data() for index in tab_ui.IncludeList.selectedIndexes()]
         selected_exclude = [index.data() for index in tab_ui.ExcludeList.selectedIndexes()]
 
         if tab_type == "list":
+            # Convert to set for fast updates
+            include_set = set(include_items)
             for item in selected_include:
-                include_items.discard(item)
+                include_set.discard(item)
                 exclude_items.add(item)
             for item in selected_exclude:
                 exclude_items.discard(item)
-                include_items.add(item)
+                include_set.add(item)
+            include_items = sorted(include_set)
         else:  # dict behavior
+            # Remove one instance of each selected item from include_items
             for item in selected_include:
-                include_items.discard(item)
-            for item in selected_exclude:
-                include_items.add(item)
+                if item in include_items:
+                    include_items.remove(item)
+            # Add one instance of each selected item to include_items
+            include_items.extend(selected_exclude)
 
         include_model.setStringList(sorted(include_items))
         exclude_model.setStringList(sorted(exclude_items))
 
+        current_type = tab_ui.Type.currentText()
+        filter_include_exclude_lists(tab_ui, game_name, current_type)
+
     tab_ui.Move.clicked.connect(on_move_clicked)
 
-def apply_yaml_items(tab_ui, yaml_path, key, exclude_model):
-    """Move items from YAML to included list, removing from excluded (supports nested game section)."""
+def apply_yaml_items(tab_ui, tab_type, yaml_path, key, exclude_model):
+    """Move items from YAML to included list, adjusting excluded list based on tab_type."""
     include_model = tab_ui.IncludeList.model()
     if include_model is None:
         include_model = QStringListModel()
@@ -323,17 +331,22 @@ def apply_yaml_items(tab_ui, yaml_path, key, exclude_model):
             except:
                 count = 1
             include_items.extend([item] * count)
-
     elif isinstance(yaml_value, list):
         include_items.extend(yaml_value)
 
-    # Move from excluded to included (remove from excluded list)
-    excluded_items = set(exclude_model.stringList())
-    for item in include_items:
-        if item in excluded_items:
-            excluded_items.discard(item)
-
+    # Update include list
     include_model.setStringList(sorted(include_items))
+
+    # Update exclude list
+    excluded_items = set(exclude_model.stringList())
+    if tab_type == "list":
+        # Remove items from exclude if they are now included
+        for item in include_items:
+            excluded_items.discard(item)
+    else:  # dict mode — ensure at least 1 copy of each unique item is present in exclude
+        unique_items = set(include_items)
+        excluded_items.update(unique_items)
+
     exclude_model.setStringList(sorted(excluded_items))
 
 def populate_filter_boxes(tab_ui, game_name, type_value):

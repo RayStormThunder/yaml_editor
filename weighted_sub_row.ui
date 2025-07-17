@@ -38,7 +38,11 @@
     <widget class="QLineEdit" name="SpecificSettingName"/>
    </item>
    <item>
-    <widget class="QSpinBox" name="SpecificSettingNumber"/>
+    <widget class="QSpinBox" name="SpecificSettingNumber">
+     <property name="maximum">
+      <number>9999999</number>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

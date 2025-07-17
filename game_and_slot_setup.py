@@ -134,22 +134,26 @@ def rebuild_game_buttons(main_window, game_names, prev_game):
 
     return game_changed, selected_game
 
-def get_latest_modification_time(folder):
-    latest_time = os.path.getmtime(folder)
-    for root, dirs, files in os.walk(folder):
-        for name in files:
-            if name.lower().endswith('.yaml'):
-                file_path = os.path.join(root, name)
-                latest_time = max(latest_time, os.path.getmtime(file_path))
-    return latest_time
+def count_yaml_files(folder):
+	count = 0
+	for root, dirs, files in os.walk(folder):
+		for name in files:
+			if name.lower().endswith('.yaml'):
+				count += 1
+	return count
 
 def slots_need_refresh(main_window, yaml_base_folder):
-    last_modified = get_latest_modification_time(yaml_base_folder) if os.path.exists(yaml_base_folder) else None
-    prev_modified = getattr(main_window, 'prev_slot_modified_time', None)
-    if prev_modified != last_modified:
-        main_window.prev_slot_modified_time = last_modified
-        return True
-    return False
+	if not os.path.exists(yaml_base_folder):
+		return False
+
+	current_count = count_yaml_files(yaml_base_folder)
+	prev_count = getattr(main_window, 'prev_slot_file_count', None)
+
+	if prev_count != current_count:
+		main_window.prev_slot_file_count = current_count
+		return True
+
+	return False
 
 def refresh_games_and_slots(main_window, prev_game, prev_slot, override):
     yaml_base_folder = os.path.join(get_exe_folder(), "YAMLS")
