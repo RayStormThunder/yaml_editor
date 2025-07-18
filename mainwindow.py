@@ -239,9 +239,16 @@ class MainWindow(QMainWindow):
 
                 # Load global setting for HideDescriptionTextEnabled
                 hide_enabled = get_global_setting("Hide Setting Description", False)
+
                 self.ui.HideDescriptionTextEnabled.setChecked(hide_enabled)
                 self.ui.DescriptionText.setVisible(not hide_enabled)
                 self.ui.HideDescriptionTextEnabled.stateChanged.connect(self.on_hide_description_toggle)
+
+                # Load global settings for Red, Blue, and Green checkboxes
+                self.ui.RedState.setChecked(get_global_setting("RedState", True))
+                self.ui.BlueState.setChecked(get_global_setting("BlueState", True))
+                self.ui.GreenState.setChecked(get_global_setting("GreenState", True))
+
                 self.ui.SaveYamlButton.clicked.connect(self.on_save_yaml_clicked)
 
                 update_datapackage()
@@ -257,6 +264,19 @@ class MainWindow(QMainWindow):
                 self.row_check_timer = QTimer(self)
                 self.row_check_timer.timeout.connect(self.check_if_rows_exist_and_set_text)
                 self.row_check_timer.start(100)
+
+                self.ui.RedState.stateChanged.connect(self.on_red_state_toggle)
+                self.ui.BlueState.stateChanged.connect(self.on_blue_state_toggle)
+                self.ui.GreenState.stateChanged.connect(self.on_green_state_toggle)
+
+        def on_red_state_toggle(self):
+                set_global_setting("RedState", self.ui.RedState.isChecked())
+
+        def on_blue_state_toggle(self):
+                set_global_setting("BlueState", self.ui.BlueState.isChecked())
+
+        def on_green_state_toggle(self):
+                set_global_setting("GreenState", self.ui.GreenState.isChecked())
 
         def update_save_yaml_button_text(self):
             has_rows = False

@@ -29,7 +29,7 @@
       <property name="frameShadow">
        <enum>QFrame::Shadow::Raised</enum>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_8">
        <item>
         <layout class="QHBoxLayout" name="TopBar" stretch="5,4,4,8">
          <item>
@@ -96,90 +96,162 @@
     <item>
      <layout class="QHBoxLayout" name="MainHorizontal" stretch="4,1">
       <item>
-       <widget class="QTabWidget" name="MainTabs">
-        <widget class="QWidget" name="General">
-         <attribute name="title">
-          <string>General</string>
-         </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,1">
-          <item>
-           <layout class="QHBoxLayout" name="GeneralSettings">
+       <layout class="QVBoxLayout" name="verticalLayout_9">
+        <item>
+         <widget class="QFrame" name="Settings">
+          <property name="frameShape">
+           <enum>QFrame::Shape::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Shadow::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <property name="spacing">
+            <number>2</number>
+           </property>
+           <property name="leftMargin">
+            <number>2</number>
+           </property>
+           <property name="topMargin">
+            <number>2</number>
+           </property>
+           <property name="rightMargin">
+            <number>2</number>
+           </property>
+           <property name="bottomMargin">
+            <number>2</number>
+           </property>
+           <item>
+            <widget class="QCheckBox" name="RedState">
+             <property name="text">
+              <string>Enable Yellow Highlighting</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="GreenState">
+             <property name="text">
+              <string>Enable Green Highlighting</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="BlueState">
+             <property name="text">
+              <string>Enable Blue Highlighting</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="WeightedSettingsEnabled">
+             <property name="text">
+              <string>Enter Weighted Option Mode</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="HideDescriptionTextEnabled">
+             <property name="text">
+              <string>Hide Setting Description</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTabWidget" name="MainTabs">
+          <widget class="QWidget" name="General">
+           <attribute name="title">
+            <string>General</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,1">
             <item>
-             <widget class="QLabel" name="SearchLabel">
-              <property name="text">
-               <string>Search:</string>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="GeneralSettings">
+              <item>
+               <widget class="QLabel" name="SearchLabel">
+                <property name="text">
+                 <string>Search:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="SearchField"/>
+              </item>
+             </layout>
             </item>
             <item>
-             <widget class="QLineEdit" name="SearchField"/>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="WeightedSettingsEnabled">
-              <property name="text">
-               <string>Enter Weighted Option Mode</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="HideDescriptionTextEnabled">
-              <property name="text">
-               <string>Hide Setting Description</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="MainLayout" stretch="0,1">
-            <item>
-             <widget class="QScrollArea" name="ScrollMain">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="widgetResizable">
-               <bool>true</bool>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
-              </property>
-              <widget class="QWidget" name="scrollAreaWidgetContents_3">
-               <property name="geometry">
-                <rect>
-                 <x>0</x>
-                 <y>0</y>
-                 <width>49</width>
-                 <height>486</height>
-                </rect>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_5">
-                <item>
-                 <spacer name="Spacer">
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Vertical</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>20</width>
-                    <height>495</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </widget>
-             </widget>
-            </item>
-            <item>
-             <widget class="QTextEdit" name="DescriptionText">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-              <property name="markdown">
-               <string>Getting Started:
+             <layout class="QHBoxLayout" name="MainLayout" stretch="0,1">
+              <item>
+               <widget class="QScrollArea" name="ScrollMain">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="widgetResizable">
+                 <bool>true</bool>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+                </property>
+                <widget class="QWidget" name="scrollAreaWidgetContents_3">
+                 <property name="geometry">
+                  <rect>
+                   <x>0</x>
+                   <y>0</y>
+                   <width>49</width>
+                   <height>454</height>
+                  </rect>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_5">
+                  <item>
+                   <spacer name="Spacer">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>495</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTextEdit" name="DescriptionText">
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+                <property name="markdown">
+                 <string>Getting Started:
 
 **_Loading a YAML:**_
 
@@ -196,6 +268,16 @@ the bottom. The file will saved into it's game folder inside 'YAMLS.' The file
 name will be {YAML Prefix Name}-{Game Name}.yaml. If you already have a file
 with that name it will be overwritten. So change the 'YAML Prefix Name' if you
 don't want to overwrite your file.
+
+
+**_Row Color Meaning:**_
+
+Green: Green means that you changed the value of that row in this session.
+Blue
+: Blue means the value of a row is different from the value of that row in the template file.
+
+Yellow: Yellow means that it is a row or value that was added by you manually.
+
 
 **_Adding items to list tabs:**_
 
@@ -229,9 +311,9 @@ that some of the fields are case sensitive. So make sure you have it correct.
     
 
 </string>
-              </property>
-              <property name="html">
-               <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+                </property>
+                <property name="html">
+                 <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 hr { height: 1px; border-width: 0; }
@@ -245,7 +327,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;Saving a YAML:&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Once you have changed your yaml to your liking. You can hit the save button at the bottom. The file will saved into it's game folder inside 'YAMLS.' The file name will be {YAML Prefix Name}-{Game Name}.yaml. If you already have a file with that name it will be overwritten. So change the 'YAML Prefix Name' if you don't want to overwrite your file.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;Row Color Meaning:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#00ff00;&quot;&gt;Green&lt;/span&gt;: Green means that you changed the value of that row in this session.&lt;br /&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;Blue&lt;/span&gt;: Blue means the value of a row is different from the value of that row in the template file.&lt;br /&gt;&lt;span style=&quot; color:#ffff00;&quot;&gt;Yellow&lt;/span&gt;: Yellow means that it is a row or value that was added by you manually.&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;Adding items to list tabs:&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;On the non-general tabs, you may have some lists that are missing data. By typing information into the 'add/remove' field in the bottom middle, you can add (or remove) that item from the list. Once an item is added to the list, it will always be there across any yaml for that game. This can be useful for lists that aren't associated with items or locations. Or if you don't have a datapackage.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
@@ -255,17 +338,19 @@ li.checked::marker { content: &quot;\2612&quot;; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;Obtaining a datapackage:&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This program will automatically update the supported game datapackage if you are connected to the internet. If you want to get the datapackage of an unsupported game because  your game does not have a datapackage, or if new items or locations have been added. You can create a multiworld with that game. Then have this yaml editor connect to that multiworld and it will extract the datapackage. This is done by not having a yaml loaded and filling out the fields at the top (not including 'YAML Prefix Name') and then pressing the 'Extract Datapackage with Server Connection' button at the bottom. Keep in mind that some of the fields are case sensitive. So make sure you have it correct.&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;    &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::TextInteractionFlag::TextSelectableByMouse</set>
-              </property>
-             </widget>
+                </property>
+                <property name="textInteractionFlags">
+                 <set>Qt::TextInteractionFlag::TextSelectableByMouse</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
-          </item>
-         </layout>
-        </widget>
-       </widget>
+          </widget>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
        <layout class="QVBoxLayout" name="Selection">

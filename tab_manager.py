@@ -1,10 +1,28 @@
 from PySide6.QtWidgets import QWidget, QListView, QLineEdit, QPushButton, QMessageBox
 from PySide6.QtCore import QStringListModel
 from ui_added_removed_lists import Ui_Form
-from stored_gui import set_game_setting, get_game_setting
+from stored_gui import set_game_setting, get_global_setting, get_game_setting, global_settings
 from datapackage_conversion import get_extracted_data
 import yaml
 import config
+from PySide6.QtWidgets import QStyledItemDelegate, QStyle
+from PySide6.QtGui import QBrush, QColor
+from PySide6.QtCore import Qt
+
+class ColoredItemDelegate(QStyledItemDelegate):
+    def __init__(self, get_color_func, parent=None):
+        super().__init__(parent)
+        self.get_color_func = get_color_func
+
+    def paint(self, painter, option, index):
+        color = self.get_color_func(index.data())
+        if color and not (option.state & QStyle.State_Selected):
+            painter.save()
+            painter.fillRect(option.rect, QColor(color))
+            painter.restore()
+
+        super().paint(painter, option, index)
+
 
 def clear_tabs(main_window):
     """Removes all tabs from MainTabs except the 'General' tab."""
@@ -66,7 +84,7 @@ def add_tabs_for_game(main_window, game_data, selected_game_path, game_name):
             exclude_model.setStringList(saved_items)
 
             setup_add_remove_button(tab_ui, game_name, key, exclude_model=exclude_model)
-            setup_include_exclude_move_button(tab_ui, game_name, tab_type, initial_include=[], exclude_model=exclude_model)
+            setup_include_exclude_move_button(tab_ui, game_name, tab_type, key, initial_include=[], exclude_model=exclude_model)
 
             type_field = tab_ui.Type
             type_field.clear()
@@ -244,7 +262,7 @@ def setup_add_remove_button(tab_ui, game_name, tab_key, exclude_model):
     tab_ui.AddRemoveButton.clicked.connect(on_add_remove_clicked)
     tab_ui.AddRemoveInput.returnPressed.connect(on_add_remove_clicked)
 
-def setup_include_exclude_move_button(tab_ui, game_name, tab_type, initial_include=None, exclude_model=None):
+def setup_include_exclude_move_button(tab_ui, game_name, tab_type, tab_key, initial_include=None, exclude_model=None):
     initial_include = initial_include or []
     if exclude_model is None:
         exclude_model = QStringListModel()
@@ -252,7 +270,64 @@ def setup_include_exclude_move_button(tab_ui, game_name, tab_type, initial_inclu
     # Shared model applied here
     include_model = QStringListModel()
     tab_ui.IncludeList.setModel(include_model)
-    tab_ui.ExcludeList.setModel(exclude_model)  # ← Shared model here
+    tab_ui.ExcludeList.setModel(exclude_model)
+
+    def get_exclude_item_color(name):
+
+        red_enabled = get_global_setting("RedState", False)
+        green_enabled = get_global_setting("GreenState", False)
+
+        additional_items = get_game_setting(game_name, "Additional Items In Lists", {}).get(tab_key, [])
+
+        if name in additional_items:
+            if red_enabled:
+                return "#5c4e1e"  # red
+
+        if not hasattr(tab_ui, "original_include_counts"):
+            return None
+
+        count_original = tab_ui.original_include_counts.get(name, 0)
+        count_current = tab_ui.IncludeList.model().stringList().count(name)
+
+        if count_current < count_original:
+            if green_enabled:
+                return "#1e5c2a"  # green
+
+        return None
+
+    def get_include_item_color(name):
+        red_enabled = get_global_setting("RedState", False)
+        green_enabled = get_global_setting("GreenState", False)
+
+        if not hasattr(tab_ui, "original_include_counts"):
+            return None
+
+        count_original = tab_ui.original_include_counts.get(name, 0)
+        count_current = tab_ui.IncludeList.model().stringList().count(name)
+
+        if count_current > count_original and green_enabled:
+            return "#1e5c2a"
+
+        additional_items = get_game_setting(game_name, "Additional Items In Lists", {}).get(tab_key, [])
+        if name in additional_items and red_enabled:
+            return "#5c4e1e"
+
+        return None
+
+    tab_ui.IncludeList.setItemDelegate(ColoredItemDelegate(get_include_item_color, tab_ui.IncludeList))
+    tab_ui.ExcludeList.setItemDelegate(ColoredItemDelegate(get_exclude_item_color, tab_ui.ExcludeList))
+
+    # Function to refresh the list views (colors)
+    def refresh_list_colors():
+        tab_ui.IncludeList.viewport().update()
+        tab_ui.ExcludeList.viewport().update()
+
+    # Respond to setting changes
+    def on_setting_changed(key, value):
+        if key in ("RedState", "GreenState"):
+            refresh_list_colors()
+
+    global_settings.changed.connect(on_setting_changed)
 
     include_model.setStringList(initial_include)
 
@@ -297,6 +372,9 @@ def setup_include_exclude_move_button(tab_ui, game_name, tab_type, initial_inclu
 
         current_type = tab_ui.Type.currentText()
         filter_include_exclude_lists(tab_ui, game_name, current_type)
+        tab_ui.IncludeList.viewport().update()
+        tab_ui.ExcludeList.viewport().update()
+
 
     tab_ui.Move.clicked.connect(on_move_clicked)
 
@@ -346,6 +424,11 @@ def apply_yaml_items(tab_ui, tab_type, yaml_path, key, exclude_model):
     else:  # dict mode — ensure at least 1 copy of each unique item is present in exclude
         unique_items = set(include_items)
         excluded_items.update(unique_items)
+
+    # Track original counts of each item
+    tab_ui.original_include_counts = {}
+    for item in include_items:
+        tab_ui.original_include_counts[item] = tab_ui.original_include_counts.get(item, 0) + 1
 
     exclude_model.setStringList(sorted(excluded_items))
 

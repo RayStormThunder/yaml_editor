@@ -62,10 +62,11 @@ def prepare_row_data(base_yaml_path, selected_game_path, selected_game_name):
             description = "\n".join(comments.get(name, []))
             # Start with base options
             final_options = {str(k): int(v) for k, v in base_options.items()}
+            # Store the original base values from base YAML before applying selected values
+            original_options = final_options.copy()
+
             if name in selected_game_values:
                 selected_value = selected_game_values[name]
-                # Store the original base values
-                original_options = final_options.copy()
 
                 # Set all values to 0 initially
                 for k in final_options:
@@ -102,12 +103,25 @@ def prepare_row_data(base_yaml_path, selected_game_path, selected_game_name):
                         selected_yaml_selected = str(option_name)
                         break
 
+            original_selected = None
+            if name in selected_game_values:
+                selected_value = selected_game_values[name]
+                if isinstance(selected_value, str):
+                    original_selected = selected_value
+                elif isinstance(selected_value, dict):
+                    for k, v in selected_value.items():
+                        if int(v) == 50:
+                            original_selected = str(k)
+                            break
+
             row_data.append({
                 "name": name,
-                "items": final_options,  # Final merged dictionary including extras
+                "items": final_options,  # merged with selected
                 "description": description,
                 "base_yaml_selected": base_yaml_selected,
-                "selected_yaml_selected": selected_yaml_selected
+                "selected_yaml_selected": selected_yaml_selected,
+                "base_items_dict": original_options,
+                "original_selected": original_selected
             })
 
     return (base_yaml_path, selected_game_path), row_data
@@ -152,6 +166,7 @@ def load_yaml_UI(main_window, base_yaml_path, selected_game_path, selected_game_
     clear_tabs(main_window)
     # Gets list of items that are tabs, not to be added to "general"
     tabbed_keys = add_tabs_for_game(main_window, game_data, selected_game_path, selected_game_name)
+
     if config.debug_flag:
         print(f"[load_yaml_data] tabbed_keys Is: {tabbed_keys}")
 
@@ -160,8 +175,19 @@ def load_yaml_UI(main_window, base_yaml_path, selected_game_path, selected_game_
         print(paths[0])
         print(paths[1])
 
-    # Clear previous rows
+    # Clear previous rows and initialize template_items from base_yaml
     clear_all_rows(main_window)
+
+    # Populate template_items from base (template) only
+    main_window.template_items = {}
+    main_window.template_items_keys = {}
+    main_window.template_items_full = {}
+    for row in rows:
+        name = row["name"]
+        base_items = row.get("base_items_dict", {})
+        main_window.template_items[name] = list(base_items.keys())  # for normal rows
+        main_window.template_items_keys[name] = list(base_items.keys())  # for normal rows
+        main_window.template_items_full[name] = base_items.copy()        # for weighted rows
 
     for row in rows:
         if row["name"] in tabbed_keys:
@@ -178,6 +204,17 @@ def load_yaml_UI(main_window, base_yaml_path, selected_game_path, selected_game_
             name=row["name"],
             items=row["items"],
             description=row["description"],
-            starting_item=row["selected_yaml_selected"]
+            starting_item=row["selected_yaml_selected"],
+            original_selected=row["original_selected"],
+            base_yaml_selected=row["base_yaml_selected"]
         )
+    
+    from add_rows import setup_row_style_signal
+
+    setup_row_style_signal(
+        main_window.ui.ScrollMain,
+        main_window.template_items,
+        main_window.template_items_full,
+        main_window.row_data
+    )
 

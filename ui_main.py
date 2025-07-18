@@ -36,8 +36,8 @@ class Ui_MainWindow(object):
         self.frame.setEnabled(True)
         self.frame.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout = QHBoxLayout(self.frame)
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.verticalLayout_8 = QVBoxLayout(self.frame)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
         self.TopBar = QHBoxLayout()
         self.TopBar.setObjectName(u"TopBar")
         self.YAMLGroup = QHBoxLayout()
@@ -106,13 +106,58 @@ class Ui_MainWindow(object):
         self.TopBar.setStretch(2, 4)
         self.TopBar.setStretch(3, 8)
 
-        self.horizontalLayout.addLayout(self.TopBar)
+        self.verticalLayout_8.addLayout(self.TopBar)
 
 
         self.verticalLayout_2.addWidget(self.frame)
 
         self.MainHorizontal = QHBoxLayout()
         self.MainHorizontal.setObjectName(u"MainHorizontal")
+        self.verticalLayout_9 = QVBoxLayout()
+        self.verticalLayout_9.setObjectName(u"verticalLayout_9")
+        self.Settings = QFrame(self.centralwidget)
+        self.Settings.setObjectName(u"Settings")
+        self.Settings.setFrameShape(QFrame.Shape.StyledPanel)
+        self.Settings.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout = QHBoxLayout(self.Settings)
+        self.horizontalLayout.setSpacing(2)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalLayout.setContentsMargins(2, 2, 2, 2)
+        self.RedState = QCheckBox(self.Settings)
+        self.RedState.setObjectName(u"RedState")
+        self.RedState.setChecked(True)
+
+        self.horizontalLayout.addWidget(self.RedState)
+
+        self.GreenState = QCheckBox(self.Settings)
+        self.GreenState.setObjectName(u"GreenState")
+        self.GreenState.setChecked(True)
+
+        self.horizontalLayout.addWidget(self.GreenState)
+
+        self.BlueState = QCheckBox(self.Settings)
+        self.BlueState.setObjectName(u"BlueState")
+        self.BlueState.setChecked(True)
+
+        self.horizontalLayout.addWidget(self.BlueState)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer)
+
+        self.WeightedSettingsEnabled = QCheckBox(self.Settings)
+        self.WeightedSettingsEnabled.setObjectName(u"WeightedSettingsEnabled")
+
+        self.horizontalLayout.addWidget(self.WeightedSettingsEnabled)
+
+        self.HideDescriptionTextEnabled = QCheckBox(self.Settings)
+        self.HideDescriptionTextEnabled.setObjectName(u"HideDescriptionTextEnabled")
+
+        self.horizontalLayout.addWidget(self.HideDescriptionTextEnabled)
+
+
+        self.verticalLayout_9.addWidget(self.Settings)
+
         self.MainTabs = QTabWidget(self.centralwidget)
         self.MainTabs.setObjectName(u"MainTabs")
         self.General = QWidget()
@@ -131,16 +176,6 @@ class Ui_MainWindow(object):
 
         self.GeneralSettings.addWidget(self.SearchField)
 
-        self.WeightedSettingsEnabled = QCheckBox(self.General)
-        self.WeightedSettingsEnabled.setObjectName(u"WeightedSettingsEnabled")
-
-        self.GeneralSettings.addWidget(self.WeightedSettingsEnabled)
-
-        self.HideDescriptionTextEnabled = QCheckBox(self.General)
-        self.HideDescriptionTextEnabled.setObjectName(u"HideDescriptionTextEnabled")
-
-        self.GeneralSettings.addWidget(self.HideDescriptionTextEnabled)
-
 
         self.verticalLayout_4.addLayout(self.GeneralSettings)
 
@@ -157,7 +192,7 @@ class Ui_MainWindow(object):
         self.ScrollMain.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 49, 486))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 49, 454))
         self.verticalLayout_5 = QVBoxLayout(self.scrollAreaWidgetContents_3)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.Spacer = QSpacerItem(20, 495, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
@@ -182,7 +217,10 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.setStretch(1, 1)
         self.MainTabs.addTab(self.General, "")
 
-        self.MainHorizontal.addWidget(self.MainTabs)
+        self.verticalLayout_9.addWidget(self.MainTabs)
+
+
+        self.MainHorizontal.addLayout(self.verticalLayout_9)
 
         self.Selection = QVBoxLayout()
         self.Selection.setObjectName(u"Selection")
@@ -299,9 +337,12 @@ class Ui_MainWindow(object):
         self.NameLabel.setText(QCoreApplication.translate("MainWindow", u"Slot:", None))
         self.GameLabel.setText(QCoreApplication.translate("MainWindow", u"Game:", None))
         self.DescriptionLabel.setText(QCoreApplication.translate("MainWindow", u"Description:", None))
-        self.SearchLabel.setText(QCoreApplication.translate("MainWindow", u"Search:", None))
+        self.RedState.setText(QCoreApplication.translate("MainWindow", u"Enable Yellow Highlighting", None))
+        self.GreenState.setText(QCoreApplication.translate("MainWindow", u"Enable Green Highlighting", None))
+        self.BlueState.setText(QCoreApplication.translate("MainWindow", u"Enable Blue Highlighting", None))
         self.WeightedSettingsEnabled.setText(QCoreApplication.translate("MainWindow", u"Enter Weighted Option Mode", None))
         self.HideDescriptionTextEnabled.setText(QCoreApplication.translate("MainWindow", u"Hide Setting Description", None))
+        self.SearchLabel.setText(QCoreApplication.translate("MainWindow", u"Search:", None))
         self.DescriptionText.setMarkdown(QCoreApplication.translate("MainWindow", u"Getting Started:\n"
 "\n"
 "**_Loading a YAML:**_\n"
@@ -320,11 +361,21 @@ class Ui_MainWindow(object):
 "with that name it will be overwritten. So change the 'YAML Prefix Name' if you\n"
 "don't want to overwrite your file.\n"
 "\n"
+"\n"
+"**_Row Color Meaning:**_\n"
+"\n"
+"Green: Green means that you changed the value of that row in this session.\n"
+"Blue\n"
+": Blue means the value of a row is different from the val"
+                        "ue of that row in the template file.\n"
+"\n"
+"Yellow: Yellow means that it is a row or value that was added by you manually.\n"
+"\n"
+"\n"
 "**_Adding items to list tabs:**_\n"
 "\n"
 "On the non-general tabs, you may have some lists that are missing data. By\n"
-"typing information into the 'add/remove' field in the bottom mi"
-                        "ddle, you can\n"
+"typing information into the 'add/remove' field in the bottom middle, you can\n"
 "add (or remove) that item from the list. Once an item is added to the list, it\n"
 "will always be there across any yaml for that game. This can be useful for\n"
 "lists that aren't associated with items or locations. Or if you don't have a\n"
@@ -338,13 +389,13 @@ class Ui_MainWindow(object):
 "do not have a datapackage, all lists will be empty by default and you will not\n"
 "be able to filter anything. \n"
 "\n"
-"**_Obtaining a datapackage:**_\n"
+"**_Obtaining a "
+                        "datapackage:**_\n"
 "\n"
 "This program will automatically update the supported game datapackage if you\n"
 "are connected to the internet. If you want to get the datapackage of an\n"
 "unsupported game because  your game does not have a datapackage, or if new\n"
-"items or locations have been added. You can create a multiworl"
-                        "d with that game.\n"
+"items or locations have been added. You can create a multiworld with that game.\n"
 "Then have this yaml editor connect to that multiworld and it will extract the\n"
 "datapackage. This is done by not having a yaml loaded and filling out the\n"
 "fields at the top (not including 'YAML Prefix Name') and then pressing the\n"
@@ -370,18 +421,19 @@ class Ui_MainWindow(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700; text-decoration: underline;\">Saving a YAML:</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0"
                         "px;\">Once you have changed your yaml to your liking. You can hit the save button at the bottom. The file will saved into it's game folder inside 'YAMLS.' The file name will be {YAML Prefix Name}-{Game Name}.yaml. If you already have a file with that name it will be overwritten. So change the 'YAML Prefix Name' if you don't want to overwrite your file.</p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /><span style=\" font-weight:700; text-decoration: underline;\">Row Color Meaning:</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#00ff00;\">Green</span>: Green means that you changed the value of that row in this session.<br /><span style=\" color:#00aaff;\">Blue</span>: Blue means the value of a row is different from the value of that row in the template file.<br /><span style=\" color:#ffff00;\">Yellow</span>: Yellow mea"
+                        "ns that it is a row or value that was added by you manually.<br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700; text-decoration: underline;\">Adding items to list tabs:</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">On the non-general tabs, you may have some lists that are missing data. By typing information into the 'add/remove' field in the bottom middle, you can add"
-                        " (or remove) that item from the list. Once an item is added to the list, it will always be there across any yaml for that game. This can be useful for lists that aren't associated with items or locations. Or if you don't have a datapackage.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">On the non-general tabs, you may have some lists that are missing data. By typing information into the 'add/remove' field in the bottom middle, you can add (or remove) that item from the list. Once an item is added to the list, it will always be there across any yaml for that game. This can be useful for lists that aren't associated with items or locations. Or if you don't have a datapackage.</p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700; text-decoration: underline;\">What does a datapackage do:</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">If your game has a datapackage, it will automatically fill the lists in non-general tabs with the items and locations associated with your game. It also allows for the filtering dropdowns to have useful things to filter. If you do not have a datapackage, all lists wil"
-                        "l be empty by default and you will not be able to filter anything. </p>\n"
+"<p style=\" margin-top:0px; margin-bott"
+                        "om:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700; text-decoration: underline;\">What does a datapackage do:</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">If your game has a datapackage, it will automatically fill the lists in non-general tabs with the items and locations associated with your game. It also allows for the filtering dropdowns to have useful things to filter. If you do not have a datapackage, all lists will be empty by default and you will not be able to filter anything. </p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700; text-decoration: underline;\">Obtaining a datapackage:</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">This program will automatically update the supported game datapackage if you are connected to the internet. If you want to get the datapackage of an unsupported game because  your game does not have a datapackage, or if new items or locations have been added. You can create a multiworld with that game. Then have this yaml editor connect to that multiworld and it will extract the datapackage. This is done by not having a yaml loaded and fill"
-                        "ing out the fields at the top (not including 'YAML Prefix Name') and then pressing the 'Extract Datapackage with Server Connection' button at the bottom. Keep in mind that some of the fields are case sensitive. So make sure you have it correct.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700; text-decoration: underline;\">Obtaining a datapackage:</spa"
+                        "n></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">This program will automatically update the supported game datapackage if you are connected to the internet. If you want to get the datapackage of an unsupported game because  your game does not have a datapackage, or if new items or locations have been added. You can create a multiworld with that game. Then have this yaml editor connect to that multiworld and it will extract the datapackage. This is done by not having a yaml loaded and filling out the fields at the top (not including 'YAML Prefix Name') and then pressing the 'Extract Datapackage with Server Connection' button at the bottom. Keep in mind that some of the fields are case sensitive. So make sure you have it correct.</p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">    </span></p></body></html>", None))
         self.MainTabs.setTabText(self.MainTabs.indexOf(self.General), QCoreApplication.translate("MainWindow", u"General", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Game", None))
