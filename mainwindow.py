@@ -244,10 +244,15 @@ class MainWindow(QMainWindow):
                 self.ui.DescriptionText.setVisible(not hide_enabled)
                 self.ui.HideDescriptionTextEnabled.stateChanged.connect(self.on_hide_description_toggle)
 
-                # Load global settings for Red, Blue, and Green checkboxes
-                self.ui.RedState.setChecked(get_global_setting("RedState", True))
-                self.ui.BlueState.setChecked(get_global_setting("BlueState", True))
-                self.ui.GreenState.setChecked(get_global_setting("GreenState", True))
+                # Ensure global color states are set to True by default if missing
+                for key in ("RedState", "BlueState", "GreenState"):
+                        value = get_global_setting(key)
+                        if value is None:
+                                set_global_setting(key, True)  # Set default if not present
+
+                self.ui.RedState.setChecked(get_global_setting("RedState"))
+                self.ui.BlueState.setChecked(get_global_setting("BlueState"))
+                self.ui.GreenState.setChecked(get_global_setting("GreenState"))
 
                 self.ui.SaveYamlButton.clicked.connect(self.on_save_yaml_clicked)
 
