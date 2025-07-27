@@ -273,15 +273,8 @@ def setup_include_exclude_move_button(tab_ui, game_name, tab_type, tab_key, init
     tab_ui.ExcludeList.setModel(exclude_model)
 
     def get_exclude_item_color(name):
-
         red_enabled = get_global_setting("RedState", False)
         green_enabled = get_global_setting("GreenState", False)
-
-        additional_items = get_game_setting(game_name, "Additional Items In Lists", {}).get(tab_key, [])
-
-        if name in additional_items:
-            if red_enabled:
-                return "#5c4e1e"  # red
 
         if not hasattr(tab_ui, "original_include_counts"):
             return None
@@ -289,9 +282,12 @@ def setup_include_exclude_move_button(tab_ui, game_name, tab_type, tab_key, init
         count_original = tab_ui.original_include_counts.get(name, 0)
         count_current = tab_ui.IncludeList.model().stringList().count(name)
 
-        if count_current < count_original:
-            if green_enabled:
-                return "#1e5c2a"  # green
+        if count_current < count_original and green_enabled:
+            return "#1e5c2a"  # green
+
+        additional_items = get_game_setting(game_name, "Additional Items In Lists", {}).get(tab_key, [])
+        if name in additional_items and red_enabled:
+            return "#5c4e1e"  # red
 
         return None
 
@@ -306,11 +302,11 @@ def setup_include_exclude_move_button(tab_ui, game_name, tab_type, tab_key, init
         count_current = tab_ui.IncludeList.model().stringList().count(name)
 
         if count_current > count_original and green_enabled:
-            return "#1e5c2a"
+            return "#1e5c2a"  # green
 
         additional_items = get_game_setting(game_name, "Additional Items In Lists", {}).get(tab_key, [])
         if name in additional_items and red_enabled:
-            return "#5c4e1e"
+            return "#5c4e1e"  # red
 
         return None
 
