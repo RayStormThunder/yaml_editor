@@ -1,5 +1,5 @@
 
-# YAML Edtior
+# YAML Editor
 
 The YAML Editor is a program designed for editing Archipelago YAMLS for Multiworlds. It is a GUI based editor that is mainly useful changing values of settings. It is able to cleanly edit single choice or weighted choice settings. It also makes lists that are supposed to contain items or locations considerably easier to manage by having included/excluded list of all the items/locations. It gets the items and locations via the the datapackage attached with Archipelago. This program can also get datapackages from unsupported games by connecting to a multiworld with that game active.
 

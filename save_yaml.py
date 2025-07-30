@@ -43,6 +43,7 @@ def save_yaml(main_window):
         # Step 2: Get NameLineEdit and GameLineEdit values
         name_value = main_window.ui.NameLineEdit.text()
         yaml_name_value = main_window.ui.YAMLLineEdit.text()
+        description_value = main_window.ui.DescriptionLineEdit.text()
         game_value = main_window.ui.GameLineEdit.text()
 
         # Step 3: Create new YAML data (starting from base_yaml)
@@ -50,6 +51,7 @@ def save_yaml(main_window):
 
         # Step 4: Update the 'name' field in new_yaml
         new_yaml['name'] = name_value
+        new_yaml['description'] = description_value
 
         # Step 5: Check WeightedSettingsEnabled checkbox
         weighted_enabled = main_window.ui.WeightedSettingsEnabled.isChecked()
