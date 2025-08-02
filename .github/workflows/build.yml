@@ -36,12 +36,14 @@ jobs:
           pip install pyinstaller pyyaml PySide6 websockets requests
 
       - name: Build Executable
+        shell: pwsh
         run: |
-          pyinstaller --name "YAML_Editor" --onefile ^
-                      --add-data "images;images" ^
-                      --collect-submodules PySide6 ^
-                      --hidden-import=yaml ^
-                      --hidden-import=websockets ^
+          pyinstaller --name "YAML_Editor" --onefile `
+                      --add-data "images;images" `
+                      --add-data "Datapackages;Datapackages" `
+                      --collect-submodules PySide6 `
+                      --hidden-import=yaml `
+                      --hidden-import=websockets `
                       mainwindow.py
 
       - name: Move Build into yaml_editor Folder
