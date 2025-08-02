@@ -302,7 +302,7 @@ class MainWindow(QMainWindow):
 
                 self.easter_egg_images = []
                 self.easter_egg_image_size = (24, 24)
-                images_dir = os.path.join(get_exe_folder(), "images")
+                images_dir = os.path.join(get_base_folder(), "images")
                 for file in os.listdir(images_dir):
                         if file.lower().endswith((".png", ".gif")):
                                 self.easter_egg_images.append(os.path.join(images_dir, file))
