@@ -37,7 +37,12 @@ jobs:
 
       - name: Build Executable
         run: |
-          pyinstaller --name "YAML_Editor" --onefile --collect-submodules PySide6 --hidden-import=yaml --hidden-import=websockets mainwindow.py
+          pyinstaller --name "YAML_Editor" --onefile ^
+                      --add-data "images;images" ^
+                      --collect-submodules PySide6 ^
+                      --hidden-import=yaml ^
+                      --hidden-import=websockets ^
+                      mainwindow.py
 
       - name: Move Build into yaml_editor Folder
         run: |
