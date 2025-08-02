@@ -7,9 +7,9 @@ import platform
 import winreg
 
 #Pyside
-from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout
-from PySide6.QtCore import QTimer
-from PySide6.QtGui import QPalette, QColor
+from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QGraphicsScene, QGraphicsPixmapItem
+from PySide6.QtCore import QTimer, Qt
+from PySide6.QtGui import QPalette, QColor, QPixmap
 
 #python imports
 import config
@@ -83,7 +83,7 @@ def apply_dark_theme(app):
                         width: 16px;
                         height: 16px;
                         border: 2px solid #d4d4d4;
-                        border-radius: 8px;  /* Half of width/height makes it a circle */
+                        border-radius: 8px;
                         background-color: #2d2d2d;
                 }
 
@@ -104,18 +104,18 @@ def apply_dark_theme(app):
                 }
 
                 QTabWidget::pane {
-                        background-color: #2c2c2c;  /* Background behind tabs and content */
+                        background-color: #2c2c2c;
                 }
 
                 QCheckBox::indicator {
                         width: 16px;
                         height: 16px;
-                        border: 2px solid #d4d4d4;  /* White border */
-                        background-color: #2d2d2d;  /* Dark inside when unchecked */
+                        border: 2px solid #d4d4d4;
+                        background-color: #2d2d2d;
                 }
 
                 QCheckBox::indicator:checked {
-                        background-color: #d4d4d4;  /* White fill when checked */
+                        background-color: #d4d4d4;
                 }
 
                 QTabWidget QWidget {
@@ -126,16 +126,11 @@ def apply_dark_theme(app):
                         background-color: #1e1e1e;
                         color: #d4d4d4;
                         border: 2px solid #2d2d2d;
-                        border-radius: 6px;  /* Rounded corner */
+                        border-radius: 6px;
                         padding: 4px;
                 }
 
-                QTabBar::tab:selected {
-                        background-color: #2d2d2d;
-                        border: 2px solid #2d2d2d;
-                        border-radius: 6px;
-                }
-
+                QTabBar::tab:selected,
                 QTabBar::tab:hover {
                         background-color: #2d2d2d;
                         border: 2px solid #2d2d2d;
@@ -147,14 +142,42 @@ def apply_dark_theme(app):
                         color: #d4d4d4;
                 }
 
-                QScrollBar {
-                        background-color: #2d2d2d;
+                /* Scrollbar Styling */
+                QScrollBar:vertical, QScrollBar:horizontal {
+                        background: #2d2d2d;
+                        width: 12px;
+                        height: 12px;
+                        margin: 0px;
+                        border: none;
                 }
 
-                QScrollBar::handle {
-                        background-color: #555555;
+                QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+                        background: #888888;
+                        border-radius: 6px;
+                        min-height: 20px;
+                        min-width: 20px;
+                }
+
+                QScrollBar::handle:hover {
+                        background: #aaaaaa;
+                }
+
+                QScrollBar::handle:pressed {
+                        background: #d4d4d4;
+                }
+
+                QScrollBar::add-line, QScrollBar::sub-line {
+                        background: none;
+                        border: none;
+                        width: 0px;
+                        height: 0px;
+                }
+
+                QScrollBar::add-page, QScrollBar::sub-page {
+                        background: none;
                 }
         """)
+
 
 def create_datapackages_and_yaml_folders():
         exe_folder = get_exe_folder()
@@ -273,6 +296,49 @@ class MainWindow(QMainWindow):
                 self.ui.RedState.stateChanged.connect(self.on_red_state_toggle)
                 self.ui.BlueState.stateChanged.connect(self.on_blue_state_toggle)
                 self.ui.GreenState.stateChanged.connect(self.on_green_state_toggle)
+
+                self.easter_egg_scene = QGraphicsScene()
+                self.ui.EasterEgg.setScene(self.easter_egg_scene)
+
+                self.easter_egg_images = []
+                self.easter_egg_image_size = (24, 24)
+                images_dir = os.path.join(get_exe_folder(), "images")
+                for file in os.listdir(images_dir):
+                        if file.lower().endswith((".png", ".gif")):
+                                self.easter_egg_images.append(os.path.join(images_dir, file))
+
+                self.easter_egg_index = 0
+
+                def update_easter_egg_image():
+                        if not self.easter_egg_images:
+                                return
+                        self.easter_egg_scene.clear()
+                        image_path = self.easter_egg_images[self.easter_egg_index]
+                        pixmap = QPixmap(image_path).scaled(
+                            self.easter_egg_image_size[0],
+                            self.easter_egg_image_size[1],
+                            Qt.KeepAspectRatio,
+                            Qt.SmoothTransformation
+                        )
+
+                        item = QGraphicsPixmapItem(pixmap)
+                        self.easter_egg_scene.addItem(item)
+                        self.easter_egg_index = (self.easter_egg_index + 1) % len(self.easter_egg_images)
+
+                self.easter_egg_timer = QTimer(self)
+                self.easter_egg_timer.timeout.connect(update_easter_egg_image)
+                self.easter_egg_timer.start(2000)  # Change image every 2 seconds
+
+                update_easter_egg_image()  # Show first image immediately
+                self.ui.EasterEgg.setVisible(False)  # Hide initially
+                self.ui.YAMLLineEdit.textChanged.connect(self.check_easter_egg_visibility)
+
+
+        def check_easter_egg_visibility(self, text: str):
+                if text.strip().lower() == "dango":
+                        self.ui.EasterEgg.setVisible(True)
+                else:
+                        self.ui.EasterEgg.setVisible(False)
 
         def on_red_state_toggle(self):
                 set_global_setting("RedState", self.ui.RedState.isChecked())

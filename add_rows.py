@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QWidget, QSpacerItem, QSizePolicy, QLabel, QComboBox, QLineEdit, QSpinBox, QVBoxLayout
-from PySide6.QtCore import Qt, QObject, QEvent
+from PySide6.QtCore import Qt, QObject, QEvent, QTimer
 from ui_row import Ui_BasicRow
 from ui_weighted_row import Ui_WeightedRow
 from ui_weighted_sub_row import Ui_SepecificSetting
@@ -28,15 +28,22 @@ def clear_all_rows(main_window):
     # Reset row_data and template_items
     main_window.row_data = []
 
-def add_both_rows(main_window, name, items, description="", starting_item="", original_selected=None, base_yaml_selected=None):
-    add_normal_row(main_window, name, items, description, starting_item, original_selected, base_yaml_selected)
-    add_weighted_row(main_window, name, items, description, starting_item)
+def add_both_rows(main_window, name, items, description="", starting_item="", original_selected=None, base_yaml_selected=None, last_touched="base"):
+    add_normal_row(main_window, name, items, description, starting_item, original_selected, base_yaml_selected, last_touched)
+    add_weighted_row(main_window, name, items, description, starting_item, last_touched)
 
-def add_normal_row(main_window, name: str, items: dict, description: str = "", starting_item: str = "", original_selected=None, base_yaml_selected=None):
+def add_normal_row(main_window, name: str, items: dict, description: str = "", starting_item: str = "", original_selected=None, base_yaml_selected=None, last_touched="base"):
     row_widget = QWidget()
     row_widget.row_type = "normal"
     row_ui = Ui_BasicRow()
     row_ui.setupUi(row_widget)
+
+    if last_touched == "removed":
+        color = "#702d2d"
+        set_row_background(row_widget, color)
+    elif last_touched == "base":
+        color = "#6b3c86"
+        set_row_background(row_widget, color)
 
     if config.debug_flag:
         print(f"[add_rows] [normal] base_items: {items}")
@@ -73,7 +80,8 @@ def add_normal_row(main_window, name: str, items: dict, description: str = "", s
         "selected_item": starting_item,
         "program_start_item": starting_item,
         "original_selected": original_selected or "",
-        "base_yaml_selected": base_yaml_selected or ""
+        "base_yaml_selected": base_yaml_selected or "",
+        "last_touched": last_touched
     })
 
 
@@ -97,7 +105,8 @@ def add_normal_row(main_window, name: str, items: dict, description: str = "", s
             current_value=current_value,
             starting_value=starting_value,
             template_values=template_values,
-            template_value=template_value
+            template_value=template_value,
+            last_touched=last_touched
         )
 
     row_index = len(main_window.row_data) - 1
@@ -178,75 +187,87 @@ def normal_changed(main_window, row_index, selected_item):
                     weighted_changed(main_window, other_widget)  # Sync
 
 
-def apply_normal_custom_style(widget, current_value, starting_value, template_values, template_value):
+def apply_normal_custom_style(widget, current_value, starting_value, template_values, template_value, last_touched="base"):
     color = ""
     red_enabled = get_global_setting("RedState", False)
     green_enabled = get_global_setting("GreenState", False)
     blue_enabled = get_global_setting("BlueState", False)
 
-    if current_value not in template_values and red_enabled:
-        color = "#5c4e1e"  # Red - not in template
-    elif current_value != starting_value and green_enabled:
-        color = "#1e5c2a"  # Green - changed
-    elif template_value is not None and current_value != template_value and blue_enabled:
-        color = "#1e2e5c"  # Blue - default mismatch
+    # Priority: Red -> Green -> Purple -> Blue
+    if last_touched != "removed":
+        if current_value not in template_values and red_enabled:
+            color = "#5c4e1e"  # Red - not in template
+        elif current_value != starting_value and green_enabled:
+            color = "#1e5c2a"  # Green - changed
+        elif template_value is not None and current_value != template_value and blue_enabled:
+            color = "#1e2e5c"  # Blue - differs from base YAML
 
-    if color:
-        widget.setStyleSheet(f"""
-            QWidget {{
-                background-color: {color};
-                color: white;
-            }}
-            QLineEdit, QSpinBox {{
-                font-size: 12pt;
-            }}
-        """)
-    else:
-        widget.setStyleSheet("""
-            QLineEdit, QSpinBox {
-                font-size: 12pt;
-            }
-        """)
+        if color:
+            widget.setStyleSheet(f"""
+                QWidget {{
+                    background-color: {color};
+                    color: white;
+                }}
+                QLineEdit, QSpinBox {{
+                    font-size: 12pt;
+                }}
+            """)
+        else:
+            widget.setStyleSheet("""
+                QLineEdit, QSpinBox {
+                    font-size: 12pt;
+                }
+            """)
 
 
-def apply_weighted_custom_style(widget, current_value, original_value, template_values, template_value, row_name, item_name):
+
+def apply_weighted_custom_style(widget, current_value, original_value, template_values, template_value, row_name, item_name, last_touched="base"):
     color = ""
     green_enabled = get_global_setting("GreenState", False)
     red_enabled = get_global_setting("RedState", False)
     blue_enabled = get_global_setting("BlueState", False)
 
-    if item_name not in template_values and red_enabled:
-        color = "#5c4e1e"  # Red - not in template
-    elif current_value != original_value and green_enabled:
-        color = "#1e5c2a"  # Green - changed
-    elif template_value is not None and current_value != template_value and blue_enabled:
-        color = "#1e2e5c"  # Blue - default mismatch
+    # Priority: Red -> Green -> Purple -> Blue
+    if last_touched != "removed":
+        if item_name not in template_values and red_enabled:
+            color = "#5c4e1e"  # Red - not in template
+        elif current_value != original_value and green_enabled:
+            color = "#1e5c2a"  # Green - changed
+        elif template_value is not None and current_value != template_value and blue_enabled:
+            color = "#1e2e5c"  # Blue - differs from base YAML
+
+        if color:
+            widget.setStyleSheet(f"""
+                QWidget {{
+                    background-color: {color};
+                    color: white;
+                }}
+                QLineEdit, QSpinBox {{
+                    font-size: 12pt;
+                }}
+            """)
+        else:
+            widget.setStyleSheet("""
+                QLineEdit, QSpinBox {
+                    font-size: 12pt;
+                }
+            """)
 
 
-    if color:
-        widget.setStyleSheet(f"""
-            QWidget {{
-                background-color: {color};
-                color: white;
-            }}
-            QLineEdit, QSpinBox {{
-                font-size: 12pt;
-            }}
-        """)
-    else:
-        widget.setStyleSheet("""
-            QLineEdit, QSpinBox {
-                font-size: 12pt;
-            }
-        """)
 
-
-def add_weighted_row(main_window, name: str, items: dict, description: str = "", starting_item: str = ""):
+def add_weighted_row(main_window, name: str, items: dict, description: str = "", starting_item: str = "", last_touched="base"):
     row_widget = QWidget()
     row_widget.row_type = "weighted"
     row_ui = Ui_WeightedRow()
     row_ui.setupUi(row_widget)
     original_weights = {}  # ← Track initial values
+
+    if last_touched == "removed":
+        color = "#702d2d"
+        set_row_background(row_widget, color)
+    elif last_touched == "base":
+        color = "#4a2c5c"
+        set_row_background(row_widget, color)
 
     if config.debug_flag:
         print(f"[add_rows] [weighted] base_items: {items}")
@@ -271,6 +292,13 @@ def add_weighted_row(main_window, name: str, items: dict, description: str = "",
             def on_value_changed():
                 current_value = sub_ui.SpecificSettingNumber.value()
                 original_value = original_weights.get(item_name, 0)
+                row_name = row_widget.findChild(QLabel, "Name").text()
+                last_touched = "base"
+                for entry in main_window.row_data:
+                    if entry["name"] == row_name:
+                        last_touched = entry.get("last_touched", "base")
+                        break
+
                 template_value = template_dict.get(item_name)
 
                 apply_weighted_custom_style(
@@ -280,7 +308,8 @@ def add_weighted_row(main_window, name: str, items: dict, description: str = "",
                     template_values=template_values,
                     template_value=template_value,
                     row_name=name,
-                    item_name=item_name
+                    item_name=item_name,
+                    last_touched=last_touched
                 )
                 weighted_changed(main_window, row_widget)
             return on_value_changed
@@ -296,7 +325,8 @@ def add_weighted_row(main_window, name: str, items: dict, description: str = "",
             template_values=template_values,
             template_value=template_dict.get(item_name),
             row_name=name,
-            item_name=item_name
+            item_name=item_name,
+            last_touched=last_touched
         )
 
         row_ui.SubRowHolder.addWidget(sub_widget)
@@ -412,43 +442,55 @@ def add_weighted_sub_row(main_window, weighted_row_widget, name_text="", number_
     weighted_row_widget.sub_row_holder.addWidget(sub_widget)
 
 def filter_rows(main_window, text):
-    weighted_enabled = main_window.ui.WeightedSettingsEnabled.isChecked()
+	weighted_enabled = main_window.ui.WeightedSettingsEnabled.isChecked()
 
-    for i in range(main_window.ui.ScrollMain.widget().layout().count()):
-        row_widget = main_window.ui.ScrollMain.widget().layout().itemAt(i).widget()
-        if row_widget is None:
-            continue  # Skip spacers or empty items
+	# Step 1: Record scroll percentage
+	scroll_bar = main_window.ui.ScrollMain.verticalScrollBar()
+	max_scroll = scroll_bar.maximum()
+	scroll_percent = scroll_bar.value() / max_scroll if max_scroll > 0 else 0
 
-        # Skip rows that are not visible due to weighted toggle
-        if hasattr(row_widget, "row_type"):
-            if (row_widget.row_type == "weighted" and not weighted_enabled) or \
-               (row_widget.row_type == "normal" and weighted_enabled):
-                row_widget.setVisible(False)
-                continue  # Don't search hidden types
+	# Step 2: Apply filtering
+	for i in range(main_window.ui.ScrollMain.widget().layout().count()):
+		row_widget = main_window.ui.ScrollMain.widget().layout().itemAt(i).widget()
+		if row_widget is None:
+			continue
 
-        # Search normally if row type matches weighted toggle
-        matches = False
-        for child in row_widget.findChildren(QLabel):
-            if text.lower() in child.text().lower():
-                matches = True
-                break
+		if hasattr(row_widget, "row_type"):
+			if (row_widget.row_type == "weighted" and not weighted_enabled) or \
+			   (row_widget.row_type == "normal" and weighted_enabled):
+				row_widget.setVisible(False)
+				continue
 
-        if not matches:
-            for child in row_widget.findChildren(QComboBox):
-                for i in range(child.count()):
-                    if text.lower() in child.itemText(i).lower():
-                        matches = True
-                        break
-                if matches:
-                    break
+		matches = False
+		for child in row_widget.findChildren(QLabel):
+			if text.lower() in child.text().lower():
+				matches = True
+				break
 
-        if not matches:
-            for child in row_widget.findChildren(QLineEdit):
-                if text.lower() in child.text().lower():
-                    matches = True
-                    break
+		if not matches:
+			for child in row_widget.findChildren(QComboBox):
+				for j in range(child.count()):
+					if text.lower() in child.itemText(j).lower():
+						matches = True
+						break
+				if matches:
+					break
 
-        row_widget.setVisible(matches)
+		if not matches:
+			for child in row_widget.findChildren(QLineEdit):
+				if text.lower() in child.text().lower():
+					matches = True
+					break
+
+		row_widget.setVisible(matches)
+
+	# Step 3: Restore scroll position based on percentage
+	# Defer it slightly to allow layout changes to update
+	def restore_scroll():
+		new_max = scroll_bar.maximum()
+		scroll_bar.setValue(int(scroll_percent * new_max))
+
+	QTimer.singleShot(0, restore_scroll)
 
 def setup_row_style_signal(scroll_area, template_items, template_items_full, row_data):
     def refresh_row_styles_from_settings():
@@ -477,6 +519,7 @@ def setup_row_style_signal(scroll_area, template_items, template_items_full, row
                         original_selected = entry.get("original_selected") or ""
                         starting_selected = entry.get("program_start_item") or ""
                         base_yaml_selected = entry.get("base_yaml_selected") or ""
+                        last_touched = entry.get("last_touched", "base")
                         break
 
                 apply_normal_custom_style(
@@ -484,7 +527,8 @@ def setup_row_style_signal(scroll_area, template_items, template_items_full, row
                     current_value=current_value,
                     starting_value=starting_selected,
                     template_values=template_values,
-                    template_value=base_yaml_selected
+                    template_value=base_yaml_selected,
+                    last_touched=last_touched
                 )
 
             elif row_type == "weighted":
@@ -523,7 +567,8 @@ def setup_row_style_signal(scroll_area, template_items, template_items_full, row
                         template_values=template_values,
                         template_value=template_value,
                         row_name=row_name,
-                        item_name=item_name
+                        item_name=item_name,
+                        last_touched=last_touched
                     )
 
     # Connect once per-instance of tab/view
@@ -531,3 +576,10 @@ def setup_row_style_signal(scroll_area, template_items, template_items_full, row
         lambda key, value: refresh_row_styles_from_settings()
         if key in ("RedState", "GreenState", "BlueState") else None
     )
+
+def set_row_background(widget, color):
+    widget.setStyleSheet(f"""
+        QWidget {{
+            background-color: {color};
+        }}
+    """)

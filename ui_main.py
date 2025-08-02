@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.8.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -15,11 +15,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QHBoxLayout,
-    QLabel, QLineEdit, QMainWindow, QMenuBar,
-    QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
-    QStatusBar, QTabWidget, QTextEdit, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QGraphicsView,
+    QHBoxLayout, QLabel, QLineEdit, QMainWindow,
+    QMenuBar, QPushButton, QScrollArea, QSizePolicy,
+    QSpacerItem, QStatusBar, QTabWidget, QTextEdit,
+    QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -40,6 +40,19 @@ class Ui_MainWindow(object):
         self.verticalLayout_8.setObjectName(u"verticalLayout_8")
         self.TopBar = QHBoxLayout()
         self.TopBar.setObjectName(u"TopBar")
+        self.EasterEgg = QGraphicsView(self.frame)
+        self.EasterEgg.setObjectName(u"EasterEgg")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(24)
+        sizePolicy.setVerticalStretch(24)
+        sizePolicy.setHeightForWidth(self.EasterEgg.sizePolicy().hasHeightForWidth())
+        self.EasterEgg.setSizePolicy(sizePolicy)
+        self.EasterEgg.setMaximumSize(QSize(24, 24))
+        self.EasterEgg.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.EasterEgg.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
+        self.TopBar.addWidget(self.EasterEgg)
+
         self.YAMLGroup = QHBoxLayout()
         self.YAMLGroup.setObjectName(u"YAMLGroup")
         self.YAMLName = QLabel(self.frame)
@@ -101,10 +114,10 @@ class Ui_MainWindow(object):
 
         self.TopBar.addLayout(self.DescriptionGroup)
 
-        self.TopBar.setStretch(0, 5)
-        self.TopBar.setStretch(1, 4)
+        self.TopBar.setStretch(1, 5)
         self.TopBar.setStretch(2, 4)
-        self.TopBar.setStretch(3, 8)
+        self.TopBar.setStretch(3, 4)
+        self.TopBar.setStretch(4, 8)
 
         self.verticalLayout_8.addLayout(self.TopBar)
 
@@ -183,11 +196,11 @@ class Ui_MainWindow(object):
         self.MainLayout.setObjectName(u"MainLayout")
         self.ScrollMain = QScrollArea(self.General)
         self.ScrollMain.setObjectName(u"ScrollMain")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.ScrollMain.sizePolicy().hasHeightForWidth())
-        self.ScrollMain.setSizePolicy(sizePolicy)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.ScrollMain.sizePolicy().hasHeightForWidth())
+        self.ScrollMain.setSizePolicy(sizePolicy1)
         self.ScrollMain.setWidgetResizable(True)
         self.ScrollMain.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
         self.scrollAreaWidgetContents_3 = QWidget()
@@ -371,6 +384,9 @@ class Ui_MainWindow(object):
 "\n"
 "Yellow: Yellow means that it is a row or value that was added by you manually.\n"
 "\n"
+"Purple: Purple means that the setting is new.\n"
+"\n"
+"Red: Red means that the setting has been removed.\n"
 "\n"
 "**_Adding items to list tabs:**_\n"
 "\n"
@@ -386,11 +402,11 @@ class Ui_MainWindow(object):
 "If your game has a datapackage, it will automatically fill the lists in\n"
 "non-general tabs with the items and locations associated with your game. It\n"
 "also allows for the filtering dropdowns to have useful things to filter. If you\n"
-"do not have a datapackage, all lists will be empty by default and you will not\n"
+"do not have a datapackage, "
+                        "all lists will be empty by default and you will not\n"
 "be able to filter anything. \n"
 "\n"
-"**_Obtaining a "
-                        "datapackage:**_\n"
+"**_Obtaining a datapackage:**_\n"
 "\n"
 "This program will automatically update the supported game datapackage if you\n"
 "are connected to the internet. If you want to get the datapackage of an\n"
@@ -423,17 +439,21 @@ class Ui_MainWindow(object):
                         "px;\">Once you have changed your yaml to your liking. You can hit the save button at the bottom. The file will saved into it's game folder inside 'YAMLS.' The file name will be {YAML Prefix Name}-{Game Name}.yaml. If you already have a file with that name it will be overwritten. So change the 'YAML Prefix Name' if you don't want to overwrite your file.</p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /><span style=\" font-weight:700; text-decoration: underline;\">Row Color Meaning:</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#00ff00;\">Green</span>: Green means that you changed the value of that row in this session.<br /><span style=\" color:#00aaff;\">Blue</span>: Blue means the value of a row is different from the value of that row in the template file.<br /><span style=\" color:#ffff00;\">Yellow</span>: Yellow mea"
-                        "ns that it is a row or value that was added by you manually.<br /></p>\n"
+                        "ns that it is a row or value that was added by you manually.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#aa00ff;\">Purple</span>: Purple means that the setting is new.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#ff0000;\">Red</span>: Red means that the setting has been removed.</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700; text-decoration: underline;\">Adding items to list tabs:</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">On the non-general tabs, you may have some lists that are missing data. By typing information into the 'add/remove' field in the bottom middle, you can add (or remove) that item from the list. Once an item is added to the list, it will always be there across any yaml for that game. This can be useful for lists that aren't associated with items or locations. Or if you don't have a datapackage.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">On the non-genera"
+                        "l tabs, you may have some lists that are missing data. By typing information into the 'add/remove' field in the bottom middle, you can add (or remove) that item from the list. Once an item is added to the list, it will always be there across any yaml for that game. This can be useful for lists that aren't associated with items or locations. Or if you don't have a datapackage.</p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bott"
-                        "om:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700; text-decoration: underline;\">What does a datapackage do:</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">If your game has a datapackage, it will automatically fill the lists in non-general tabs with the items and locations associated with your game. It also allows for the filtering dropdowns to have useful things to filter. If you do not have a datapackage, all lists will be empty by default and you will not be able to filter anything. </p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700; text-decoration: underline;\">What does a datapackage do:</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">If your game has a datapackage, it will automatically fill the lists in non-general tabs with the items and locations associated w"
+                        "ith your game. It also allows for the filtering dropdowns to have useful things to filter. If you do not have a datapackage, all lists will be empty by default and you will not be able to filter anything. </p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700; text-decoration: underline;\">Obtaining a datapackage:</spa"
-                        "n></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">This program will automatically update the supported game datapackage if you are connected to the internet. If you want to get the datapackage of an unsupported game because  your game does not have a datapackage, or if new items or locations have been added. You can create a multiworld with that game. Then have this yaml editor connect to that multiworld and it will extract the datapackage. This is done by not having a yaml loaded and filling out the fields at the top (not including 'YAML Prefix Name') and then pressing the 'Extract Datapackage with Server Connection' button at the bottom. Keep in mind that some of the fields are case sensitive. So make sure you have it correct.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700; text-decoration: underline;\">Obtaining a datapackage:</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">This program will automatically update the supported game datapackage if you are connected to the internet. If you want to get the datapackage of an unsupported game because  your game does not have a datapackage, or if new items or locations have been added. You can create a multiworld with that game. Th"
+                        "en have this yaml editor connect to that multiworld and it will extract the datapackage. This is done by not having a yaml loaded and filling out the fields at the top (not including 'YAML Prefix Name') and then pressing the 'Extract Datapackage with Server Connection' button at the bottom. Keep in mind that some of the fields are case sensitive. So make sure you have it correct.</p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">    </span></p></body></html>", None))
         self.MainTabs.setTabText(self.MainTabs.indexOf(self.General), QCoreApplication.translate("MainWindow", u"General", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Game", None))

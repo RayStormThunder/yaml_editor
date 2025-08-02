@@ -41,90 +41,142 @@ def resolve_selected_option(value):
     return None
 
 def prepare_row_data(base_yaml_path, selected_game_path, selected_game_name):
-    # Load both YAML files
-    base_yaml_data = load_yaml_file(base_yaml_path)
-    selected_yaml_data = load_yaml_file(selected_game_path)
+	base_yaml_data = load_yaml_file(base_yaml_path)
+	selected_yaml_data = load_yaml_file(selected_game_path)
 
-    # Extract section from both
-    base_game_data = base_yaml_data.get(selected_game_name)
-    selected_game_values = selected_yaml_data.get(selected_game_name, {})
+	base_game_data = base_yaml_data.get(selected_game_name)
+	selected_game_values = selected_yaml_data.get(selected_game_name, {})
 
-    if not base_game_data:
-        print(f"[load_yaml_data] [ERROR] Game '{selected_game_name}' not found in base YAML.")
-        return None, []
+	if not base_game_data:
+		print(f"[load_yaml_data] [ERROR] Game '{selected_game_name}' not found in base YAML.")
+		return None, []
 
-    comments = extract_comments(base_yaml_path, selected_game_name)
+	comments = extract_comments(base_yaml_path, selected_game_name)
 
-    row_data = []
+	row_data = []
+	seen_keys = set()
+	base_keys = list(base_game_data.keys())
+	insert_index_map = {}
 
-    for name, base_options in base_game_data.items():
-        if isinstance(base_options, dict):
-            description = "\n".join(comments.get(name, []))
-            # Start with base options
-            final_options = {str(k): int(v) for k, v in base_options.items()}
-            # Store the original base values from base YAML before applying selected values
-            original_options = final_options.copy()
+	# Step 1: Process base keys in order
+	for i, name in enumerate(base_keys):
+		base_options = base_game_data[name]
+		if not isinstance(base_options, dict):
+			continue
 
-            if name in selected_game_values:
-                selected_value = selected_game_values[name]
+		insert_index_map[name] = len(row_data)  # Record current position
+		description = "\n".join(comments.get(name, []))
+		final_options = {str(k): int(v) for k, v in base_options.items()}
+		original_options = final_options.copy()
 
-                # Set all values to 0 initially
-                for k in final_options:
-                    final_options[k] = 0
+		last_touched = "base"
+		if name in selected_game_values:
+			last_touched = "selected"
+			selected_value = selected_game_values[name]
+			for k in final_options:
+				final_options[k] = 0
+			if isinstance(selected_value, dict):
+				for k, v in selected_value.items():
+					if int(v) != 0:
+						final_options[str(k)] = int(v)
+			else:
+				final_options[str(selected_value)] = 50
 
-                if isinstance(selected_value, dict):
-                    for k, v in selected_value.items():
-                        if int(v) != 0:
-                            final_options[str(k)] = int(v)
-                else:
-                    # Single selected option -> set it to 50
-                    if str(selected_value) in final_options:
-                        final_options[str(selected_value)] = 50
-                    else:
-                        final_options[str(selected_value)] = 50
+			if all(v == 0 for v in final_options.values()):
+				final_options = original_options
 
-                # If all values are 0, restore original base values
-                if all(v == 0 for v in final_options.values()):
-                    final_options = original_options
+		base_yaml_selected = next((str(opt) for opt, val in base_options.items() if val == 50), None)
+		max_value = max(final_options.values(), default=None)
+		selected_yaml_selected = next((str(opt) for opt, val in final_options.items() if val == max_value), None)
 
-            # Determine base_yaml_selected (option with 50 in base YAML)
-            base_yaml_selected = None
-            for option_name, value in base_options.items():
-                if value == 50:
-                    base_yaml_selected = str(option_name)
-                    break
+		original_selected = None
+		if name in selected_game_values:
+			selected_value = selected_game_values[name]
+			if isinstance(selected_value, str):
+				original_selected = selected_value
+			elif isinstance(selected_value, dict):
+				for k, v in selected_value.items():
+					if int(v) == 50:
+						original_selected = str(k)
+						break
 
-            # Determine selected_yaml_selected (highest weighted option)
-            selected_yaml_selected = None
-            max_value = max(final_options.values(), default=None)
-            if max_value is not None:
-                for option_name, value in final_options.items():
-                    if value == max_value:
-                        selected_yaml_selected = str(option_name)
-                        break
+		row_data.append({
+			"name": name,
+			"items": final_options,
+			"description": description,
+			"base_yaml_selected": base_yaml_selected,
+			"selected_yaml_selected": selected_yaml_selected,
+			"base_items_dict": original_options,
+			"original_selected": original_selected,
+			"last_touched": last_touched
+		})
+		seen_keys.add(name)
 
-            original_selected = None
-            if name in selected_game_values:
-                selected_value = selected_game_values[name]
-                if isinstance(selected_value, str):
-                    original_selected = selected_value
-                elif isinstance(selected_value, dict):
-                    for k, v in selected_value.items():
-                        if int(v) == 50:
-                            original_selected = str(k)
-                            break
+	# Step 2: Insert removed rows at proper positions
+	extra_keys = [key for key in selected_game_values.keys() if key not in seen_keys]
 
-            row_data.append({
-                "name": name,
-                "items": final_options,  # merged with selected
-                "description": description,
-                "base_yaml_selected": base_yaml_selected,
-                "selected_yaml_selected": selected_yaml_selected,
-                "base_items_dict": original_options,
-                "original_selected": original_selected
-            })
+	for extra_key in extra_keys:
+		selected_value = selected_game_values[extra_key]
+		final_options = {}
 
-    return (base_yaml_path, selected_game_path), row_data
+		if isinstance(selected_value, dict):
+			final_options = {str(k): int(v) for k, v in selected_value.items()}
+		elif isinstance(selected_value, str):
+			final_options = {str(selected_value): 50}
+		else:
+			continue  # skip if unexpected type
+
+		selected_yaml_selected = next((str(opt) for opt, val in final_options.items() if val == max(final_options.values(), default=0)), None)
+
+		insert_index = len(row_data)  # default to end
+
+		# Try to insert based on alphabetical order (or numerical order) similarity to base_keys
+		for i, base_key in enumerate(base_keys):
+			if extra_key < base_key:
+				insert_index = i
+				break
+
+		removed_row = {
+			"name": f"{extra_key}-REMOVED",
+			"items": final_options,
+			"description": "[Removed from base template]",
+			"base_yaml_selected": None,
+			"selected_yaml_selected": selected_yaml_selected,
+			"base_items_dict": {},
+			"original_selected": selected_yaml_selected,
+			"last_touched": "removed"
+		}
+
+		row_data.insert(insert_index, removed_row)
+
+	# Step 3: Compute merged ordering using base order and selected unique keys
+	final_order = base_keys.copy()
+
+	selected_keys = list(selected_game_values.keys())
+	extra_keys = [k for k in selected_keys if k not in base_keys]
+
+	for extra_key in extra_keys:
+		# Find the previous known key (that exists in base) in selected order
+		prev_base_key = None
+		for i in range(selected_keys.index(extra_key) - 1, -1, -1):
+			if selected_keys[i] in base_keys:
+				prev_base_key = selected_keys[i]
+				break
+
+		if prev_base_key and prev_base_key in final_order:
+			insert_index = final_order.index(prev_base_key) + 1
+		else:
+			insert_index = len(final_order)
+
+		if extra_key not in final_order:
+			final_order.insert(insert_index, extra_key + "-REMOVED")  # renamed for removed
+
+	# Reorder row_data based on final_order
+	row_data_dict = {row["name"]: row for row in row_data}
+	row_data = [row_data_dict[name] for name in final_order if name in row_data_dict]
+
+	return (base_yaml_path, selected_game_path), row_data
+
 
 def load_yaml_UI(main_window, base_yaml_path, selected_game_path, selected_game_name):
     paths, rows = prepare_row_data(base_yaml_path, selected_game_path, selected_game_name)
@@ -206,7 +258,8 @@ def load_yaml_UI(main_window, base_yaml_path, selected_game_path, selected_game_
             description=row["description"],
             starting_item=row["selected_yaml_selected"],
             original_selected=row["original_selected"],
-            base_yaml_selected=row["base_yaml_selected"]
+            base_yaml_selected=row["base_yaml_selected"],
+	        last_touched=row.get("last_touched", "base"),
         )
     
     from add_rows import setup_row_style_signal

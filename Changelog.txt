@@ -1,0 +1,197 @@
+2.2.1
+
+New Minor Feature:
+-Added Purple Highlighting which hightlights a row if the setting is new
+-Added Red Highlighting which hightlights a row if the setting has been removed
+-When switching from normal <-> weighted mode. It will now keep your scroll position
+-Added Secret Easter Egg
+
+Bug Fixes/UI Fixes:
+-Fixed a bug where the highlight order of 'excluded' lists were incorrect
+-Fixed a bug where the 'description' field was not saving to the file
+-Scroll Bar is now a more distinct color from the background for Windows 10 theme
+
+GitHub changes:
+-Added changelog
+-Added screenshots
+-Added README and LICENSE
+
+
+2.2.0
+
+New Minor Feature:
+-Rows and List Values can now be different colors depending on their state
+-Green means that you changed the value of that row in this session.
+-Blue means the value of a row is different from the value of that row in the template file.
+-Yellow means that it is a row or value that was added by you manually.
+-You can disable these colors with buttons at the top
+
+Made two small changes:
+-The YAML list now updates based on changes in the amount of items in a folder, not last modified date
+-Putting a number (1-9) as the first character of a datapackage gives that priority
+
+Bug Fixes:
+-Fixed a bug where hitting the 'move' button didn't reapply the filter
+-Fixed a bug where if you loaded a yaml with an item in a dictionary, that item would not be in the excluded list
+-Fixed a bug where removing one item in the included list when you had multiple would remove all of them
+
+
+
+2.1.1
+
+Bug Fix:
+-Fixed an issue where a game name with a disallowed character for window's files and folders would fail to create the files or folders. Any such characters will be replaced by a tilda '~'
+
+
+
+2.1.0
+
+Minor Features:
+-The program no longer contains any datapackages
+-The program now automatically will extract/update the supported datapackages from archipelago on first run and when archipelago updates
+-Extracting an unsupported game's datapackage will include the groups allowing for filtering
+-The Setting Description field when a yaml is not loaded will be bigger and give information on how to use the program
+
+Serious Bug Fixes:
+-Fixed a bug where loading a weighted option yaml would keep the default value for the option regardless of what the yaml said
+
+Backend changes:
+-Pulling the supported datapackage will check for an update via GitHub tags before pulling data
+-Pulling a datpackage via connecting to a multiworld will only request a datapackage if it's checksum is different from the current one
+
+
+
+2.0.3
+
+Made various small changes:
+-New field added before the 'slot' field called 'YAML prefix name.' The file name will be saved using that instead of slot
+-Template files inside of 'YAMLS' will be renamed to {game}_Template.yaml
+-When a yaml is not loaded, the 'Description:' label will be changed to 'Server Address:'
+-When a yaml is not loaded, the Save Button text will be changed to 'Extract Datapackage with Server Connection'
+-The version number in the window title will be set automatically
+
+
+
+2.0.2
+
+Fixed a serious bug and added two small changes:
+Fixed a bug where the 'gui_data.json' was being saved in incorrect place. This caused issues such as
+-The program would not remember your last loaded yaml
+-Adding items to the lists with the Add/Remove button would not be remembered
+-Your 'Enter Weighted Option Mode' setting would not be remembered per yaml file
+-Your 'Hide Setting Description' setting would not be remembered
+
+Made two changes:
+-Search text is now matched to every item in a combobox, not just the currently selected item
+-The custom theme will be applied to people using light theme, not just windows 10 users
+
+
+
+2.0.1
+
+Fixes various bugs with the program:
+-Fixed a bug where having a template yaml not be called, "{game}.yaml" would cause loading issues
+-Fixed a bug where the "YAML" section would not auto update it's yamls
+-Imported Websockets to actually allow server connections for datapackage extraction purposes
+-The "Save" and "Load" buttons have been moved down to make the "Save" button always accessible
+-The "Save" button now actually shows in real time what the file's name will save as
+-Greatly improved UI for Windows 10 and Light Mode Users (By forcing dark mode :P)
+
+
+
+2.0.0
+
+This update completely reworks the entire program.
+To start using, start the program in a new folder. Then place template yamls in the YAMLS folder.
+If you have any previous yamls, add those to their respective folders that should appear when you add the template yaml.
+
+Features:
+- You can now do modify Weights of your settings
+- The Description is now right of the options in the general tab and can be hidden
+- You can now search the General Tab
+- You can now filter a list by exclusion instead of on inclusion
+- For undefined lists you can set if they should have items, locations or custom by default
+- You can now add or remove items from lists. These will be remembered per game
+- You can now load yamls in the UI
+- You can now use any game's yaml
+
+Datapackage Retrival
+You can now extract the datapackage by doing the following:
+
+- Start an AP Seed with the game you want in it
+- Make sure you don't have a yaml loaded in your yaml_editor
+- Insert the slot name into the slot field
+- Insert the game name into the game field
+- Insert the server address into the description field
+- Click the Save YAML button
+- This will join that room, extract the datapackage from each game, and disconnect you
+
+
+
+1.2.0
+
+This updates a couple resources:
+-Added support for Civilization VI 0.4.0
+-Update Stardew Valley to 6.8.6
+-Update Base Datapackage to 0.6.0
+
+This update fixes a couple bugs:
+-Properly loads items/locations with alt name and normal name depending on what is used
+
+
+
+1.1.0
+
+This updates a couple resources:
+-Added support for Hades 0.13.1
+-Update Skyward Sword to 0.5.0 [Alpha]
+
+
+
+1.0.1
+
+This update fixes a couple bugs:
+-After loading a YAML, the program now properly removes the previous LOAD/SAVE buttons
+-After clicking the "?" button, the program will now remove the tooltip if the tab changes
+
+This update adds a couple of backend changes:
+-You know only need the to replace the exe in your previous folder when updating
+=Keep in mind that after an update it will replace stuff in your "Setup" folder
+-The game_version.yaml now tracks the version you are on/last on
+-If the program detects a difference between your current and last version it will update your folders
+
+This update adds a couple of UI changes:
+-The height of rows is now fixed
+=Tabs with very few rows will now not try to fit the entire space available
+=Tabs with many rows will now add a scroll wheel
+-The color of the scroll wheel is now blue instead of white
+-The window name now shows the Version Number and Commit ID
+
+
+
+v1.0.0
+
+This update adds some new features:
+-The YAML Editor now tells you what patcher version it is using, so you know what version it works with.
+-Each game is not hardcoded anymore. You can edit YAML files in the "Setup" folder to add a new game.
+
+This update adds a game:
+-The Legend of Zelda - Oracle of Ages
+
+This update fixes a bug:
+-Custom Exclusive lists were not having the items be removed from the right side if it was in the left side.
+-Fixes an issue where I accidentally deleted some custom lists for Wind Waker
+
+
+
+v0.0.2
+
+Fixes issues of Releases not being able to write the artifact into the release page.
+Reformats Zip Folder names.
+Imports pyyaml and PyQt5
+
+
+
+v0.0.1
+
+This is the release of the YAML editor

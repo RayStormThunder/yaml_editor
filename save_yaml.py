@@ -111,6 +111,8 @@ def set_normal_values(main_window, new_yaml, game_value):
 
         if label and combo:
             field_name = label.text()
+            if "REMOVED" in field_name:
+                continue  # Skip removed settings
             selected_value = combo.currentText()
             set_game_option(new_yaml, game_value, field_name, selected_value)
 
@@ -129,6 +131,8 @@ def set_weighted_values(main_window, new_yaml, game_value):
             continue
 
         field_name = label.text()
+        if "REMOVED" in field_name:
+            continue  # Skip removed settings
         weighted_dict = {}
 
         # Loop through all sub-rows inside SubRowHolder (sub_row_holder)
