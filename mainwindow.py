@@ -331,11 +331,11 @@ class MainWindow(QMainWindow):
 
                 update_easter_egg_image()  # Show first image immediately
                 self.ui.EasterEgg.setVisible(False)  # Hide initially
-                self.ui.YAMLLineEdit.textChanged.connect(self.check_easter_egg_visibility)
+                self.ui.DescriptionLineEdit.textChanged.connect(self.check_easter_egg_visibility)
 
 
         def check_easter_egg_visibility(self, text: str):
-                if text.strip().lower() == "dango":
+                if "dango" in text.strip().lower():
                         self.ui.EasterEgg.setVisible(True)
                 else:
                         self.ui.EasterEgg.setVisible(False)
