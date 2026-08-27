@@ -1,3 +1,8 @@
+2.2.2
+
+Bug Fixes/UI Fixes:
+-Prevents having the same value appear twice in the output
+
 2.2.1
 
 New Minor Feature:

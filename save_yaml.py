@@ -156,18 +156,40 @@ def set_game_option(yaml_data, game_key, field_name, value):
     if game_key not in yaml_data:
         yaml_data[game_key] = {}
 
-    if isinstance(value, dict) or isinstance(value, list):
+    if isinstance(value, dict):
+        canonical_to_key = {}
+        normalized_dict = {}
+        for original_key, original_value in value.items():
+            canonical_key = str(original_key)
+            chosen_key = canonical_to_key.get(canonical_key)
+            if chosen_key is None:
+                canonical_to_key[canonical_key] = original_key
+                chosen_key = original_key
+            normalized_dict[chosen_key] = original_value
+        yaml_data[game_key][field_name] = normalized_dict
+    elif isinstance(value, list):
         yaml_data[game_key][field_name] = value
     else:
         # Auto-convert: set 50 to selected, 0 to others
         existing_field = yaml_data[game_key].get(field_name, {})
         if isinstance(existing_field, dict):
+            canonical_to_key = {}
             new_dict = {}
-            for k in existing_field.keys():
-                new_dict[k] = 50 if str(k) == str(value) else 0
-            # Add value if not present yet
-            if str(value) not in new_dict:
-                new_dict[str(value)] = 50
+            for existing_key in existing_field.keys():
+                canonical_key = str(existing_key)
+                if canonical_key in canonical_to_key:
+                    continue
+                canonical_to_key[canonical_key] = existing_key
+                new_dict[existing_key] = 0
+
+            selected_canonical = str(value)
+            selected_key = canonical_to_key.get(selected_canonical)
+            if selected_key is None:
+                selected_key = value
+                new_dict[selected_key] = 0
+
+            for key in list(new_dict.keys()):
+                new_dict[key] = 50 if key == selected_key else 0
             yaml_data[game_key][field_name] = new_dict
         else:
             # Fallback: just set as value (for safety)
